@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Cổng tra cứu kết quả tuyển sinh Trường Đại học Ánh Trường - Tra cứu nhanh kết quả trúng tuyển bằng số báo danh." />
+    <title>Tra cứu tuyển sinh — Đại học Ánh Trường</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css" />
+</head>
+<body class="theme-admission page-search">
+
+<!-- Background atmosphere -->
+<div class="scene">
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+    <div class="grid-overlay"></div>
+</div>
+
+<div class="school-shell layout">
+
+    <!-- ===== HEADER ===== -->
+    <header class="card reveal site-header" id="site-header">
+        <div class="site-brand">
+            <div class="brand-logo" aria-hidden="true">AT</div>
+            <div class="brand-copy">
+                <p>Trường Đại học Ánh Trường</p>
+                <strong>Cổng tra cứu tuyển sinh</strong>
+            </div>
+        </div>
+
+        <nav class="site-actions" aria-label="Menu chính">
+            <a th:href="@{/gioi-thieu}" href="/gioi-thieu" id="nav-gioithieu">Giới thiệu</a>
+            <a th:href="@{/thong-tin-tuyen-sinh}" href="/thong-tin-tuyen-sinh" id="nav-thongtin">Thông tin tuyển sinh</a>
+            <a class="active" th:href="@{/tracuu}" href="/tracuu" id="nav-tracuu">Tra cứu</a>
+        </nav>
+
+        <a th:href="@{/logout}" href="/logout" class="btn-ghost" id="btn-logout">Đăng xuất</a>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="site-content">
+
+        <!-- Search panel -->
+        <section class="card reveal lookup-panel" id="lookup-panel">
+            <p class="eyebrow">Tra cứu trực tuyến</p>
+            <h1>Tra cứu kết quả kì thi THPT 2025</h1>
+            <p class="muted">Nhập số báo danh và nhấn Enter hoặc nút Tìm kiếm để xem kết quả tuyển sinh.</p>
+
+            <form method="get" th:action="@{/tracuu}" class="lookup-form" id="lookup-form">
+                <input
+                    id="sbd"
+                    name="sbd"
+                    type="text"
+                    placeholder="Nhập số báo danh…"
+                    th:value="${sbd}"
+                    required
+                    autofocus
+                    autocomplete="off"
+                />
+                <button class="btn-primary" type="submit" id="btn-search">
+                    <span class="material-symbols-rounded" style="font-size:1.1rem">search</span>
+                    Tìm kiếm                  
+                </button>
+            </form>
+        </section>
+
+        <!-- ===== STATE 1: Admitted ===== -->
+        <section class="card reveal admitted-result" th:if="${daTim and thiSinh != null}" id="result-admitted">
+
+            <!-- Badge + Headline -->
+            <span class="decision-badge" id="badge-admitted">Quyết định chính thức</span>
+            <h2 class="admit-title" id="admit-title">
+                Chúc mừng! Bạn đã trúng tuyển vào ngành
+                <span th:text="${thiSinh.nganhXetTuyen}">Công nghệ thông tin</span>
+            </h2>
+            <p class="muted admit-desc">
+                Hội đồng tuyển sinh trân trọng thông báo thí sinh đã đáp ứng đầy đủ các tiêu chí và chính thức trở
+                thành tân sinh viên năm học 2025. Vui lòng hoàn tất các bước xác nhận theo hướng dẫn bên dưới.
+            </p>
+
+            <!-- Action buttons -->
+            <div class="result-actions" id="result-actions">
+                <a href="#" class="btn-success" id="btn-confirm">
+                    <span class="material-symbols-rounded" style="font-size:1.1rem">check_circle</span>
+                    Xác nhận nhập học
+                </a>
+                <a href="#" class="btn-outline" id="btn-download">
+                    <span class="material-symbols-rounded" style="font-size:1.1rem">download</span>
+                    Tải giấy báo
+                </a>
+            </div>
+                <!-- Detailed score card -->
+            <div class="score-card detailed-score-card" id="score-card">
+                <h3>Bảng điểm chi tiết</h3>
+                <div class="score-student-meta">
+                    <span><strong>SBD:</strong> <span th:text="${thiSinh.soBaoDanh}">TS2025001</span></span>
+                    <span><strong>Họ tên:</strong> <span th:text="${thiSinh.hoTen}">Nguyễn Văn An</span></span>
+                    <span><strong>Mã ngành:</strong> <span th:text="${thiSinh.maNganh}">7480201</span></span>
+                </div>
+                <div class="score-table-wrap">
+                    <table class="score-table" id="score-table">
+                        <thead>
+                        <tr>
+                            <th>Hạng mục</th>
+                            <th>Điểm</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Môn 1</td>
+                            <td th:text="${#numbers.formatDecimal(thiSinh.diemMon1, 1, 2)}">8.50</td>
+                        </tr>
+                        <tr>
+                            <td>Môn 2</td>
+                            <td th:text="${#numbers.formatDecimal(thiSinh.diemMon2, 1, 2)}">7.00</td>
+                        </tr>
+                        <tr>
+                            <td>Môn 3</td>
+                            <td th:text="${#numbers.formatDecimal(thiSinh.diemMon3, 1, 2)}">9.00</td>
+                        </tr>
+                        <tr>
+                            <td>Điểm ưu tiên</td>
+                            <td th:text="${#numbers.formatDecimal(thiSinh.diemUuTien, 1, 2)}">0.50</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>Tổng điểm</td>
+                            <td th:text="${#numbers.formatDecimal(thiSinh.tongDiem, 1, 2)}">25.00</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Related links -->
+            <div class="related-links" id="related-links">
+                <a href="#" class="related-link" id="link-guide">
+                    <strong>
+                        <span class="material-symbols-rounded" style="font-size:1rem;vertical-align:-3px;margin-right:4px">menu_book</span>
+                        Hướng dẫn nhập học
+                    </strong>
+                    <span>Quy trình 5 bước để hoàn tất hồ sơ nhập học</span>
+                </a>
+                <a href="#" class="related-link" id="link-fee">
+                    <strong>
+                        <span class="material-symbols-rounded" style="font-size:1rem;vertical-align:-3px;margin-right:4px">account_balance_wallet</span>
+                        Học phí và lệ phí
+                    </strong>
+                    <span>Tra cứu thông tin tài chính và học bổng chi tiết</span>
+                </a>
+            </div>
+
+            <!-- Timeline -->
+            <div class="timeline-box" id="timeline-box">
+                <h3>
+                    <span class="material-symbols-rounded" style="font-size:1.1rem;vertical-align:-3px;margin-right:4px">event</span>
+                    Mốc thời gian quan trọng
+                </h3>
+                <ul>
+                    <li class="active">
+                        <strong>Xác nhận nhập học trực tuyến</strong>
+                        <span>Trước 17:00, ngày 15 tháng 09 năm 2025</span>
+                    </li>
+                    <li>
+                        <strong>Nộp hồ sơ bản cứng</strong>
+                        <span>Từ 20/09 đến 25/09 năm 2025</span>
+                    </li>
+                    <li>
+                        <strong>Ngày khai giảng dự kiến</strong>
+                        <span>Ngày 05 tháng 10 năm 2025</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== STATE 2: Not admitted ===== -->
+        <section class="card reveal" th:if="${daTim and thiSinh == null}" id="result-not-admitted">
+            <p class="eyebrow" style="background: rgba(186, 26, 26, 0.1); color: #93000a;">Thông báo</p>
+            <h2 style="margin-top: 0.5rem;">Bạn không trúng tuyển vào trường</h2>
+            <p class="muted" th:text="${message}">Bạn không trúng tuyển vào trường</p>
+            <div class="quick-actions" style="margin-top: 1rem;">
+                <a th:href="@{/tracuu}" href="/tracuu" class="btn-outline" id="btn-try-again">
+                    <span class="material-symbols-rounded" style="font-size:1rem">refresh</span>
+                    Tra cứu lại
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="card reveal site-footer" id="site-footer">
+        <p>© 2025 Trường Đại học Ánh Trường — Cổng tra cứu tuyển sinh</p>
+        <p>Email: tuyensinh@anhtruong.edu.vn | Hotline: 1900 2025</p>
+    </footer>
+
+</div>
+</body>
+</html>

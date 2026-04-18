@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giới thiệu - Cổng tra cứu tuyển sinh</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css" />
+</head>
+<body class="theme-admission page-search">
+<div class="scene">
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+    <div class="grid-overlay"></div>
+</div>
+
+<div class="school-shell layout narrow">
+    <header class="card reveal site-header">
+        <div class="site-brand">
+            <div class="brand-logo" aria-hidden="true">AT</div>
+            <div class="brand-copy">
+                <p>Trường Đại học Ánh Trường</p>
+                <strong>Cổng tra cứu tuyển sinh</strong>
+            </div>
+        </div>
+
+        <nav class="site-actions" aria-label="Menu chính">
+            <a class="active" th:href="@{/gioi-thieu}" href="/gioi-thieu">Giới thiệu</a>
+            <a th:href="@{/thong-tin-tuyen-sinh}" href="/thong-tin-tuyen-sinh">Thông tin tuyển sinh</a>
+            <a th:href="@{/tracuu}" href="/tracuu">Tra cứu</a>
+        </nav>
+
+        <a th:href="@{/logout}" href="/logout" class="btn-ghost">Đăng xuất</a>
+    </header>
+
+    <main class="site-content">
+        <section class="card reveal info-card">
+            <p class="eyebrow">Giới thiệu</p>
+            <h1>Về Trường Đại học Ánh Trường</h1>
+            <p class="muted">Trường Đại học Ánh Trường định hướng đào tạo ứng dụng, lấy người học làm trung tâm và gắn kết chặt chẽ với nhu cầu nhân lực của xã hội.</p>
+
+            <div class="info-grid">
+                <article>
+                    <h3>Tầm nhìn</h3>
+                    <p>Trở thành cơ sở giáo dục đại học uy tín trong đào tạo, nghiên cứu và đổi mới sáng tạo.</p>
+                </article>
+                <article>
+                    <h3>Sứ mệnh</h3>
+                    <p>Cung cấp môi trường học tập hiện đại, giúp sinh viên phát triển toàn diện kiến thức và kỹ năng.</p>
+                </article>
+                <article>
+                    <h3>Giá trị cốt lõi</h3>
+                    <p>Chính trực, chất lượng, sáng tạo và trách nhiệm cộng đồng trong mọi hoạt động đào tạo.</p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer class="card reveal site-footer">
+        <p>© 2025 Trường Đại học Ánh Trường - Cổng tra cứu tuyển sinh</p>
+        <p>Email: tuyensinh@anhtruong.edu.vn | Hotline: 1900 2025</p>
+    </footer>
+</div>
+</body>
+</html>

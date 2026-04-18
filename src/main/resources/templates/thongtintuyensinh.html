@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thông tin tuyển sinh - Cổng tra cứu tuyển sinh</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css" />
+</head>
+<body class="theme-admission page-search">
+<div class="scene">
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+    <div class="grid-overlay"></div>
+</div>
+
+<div class="school-shell layout narrow">
+    <header class="card reveal site-header">
+        <div class="site-brand">
+            <div class="brand-logo" aria-hidden="true">AT</div>
+            <div class="brand-copy">
+                <p>Trường Đại học Ánh Trường</p>
+                <strong>Cổng tra cứu tuyển sinh</strong>
+            </div>
+        </div>
+
+        <nav class="site-actions" aria-label="Menu chính">
+            <a th:href="@{/gioi-thieu}" href="/gioi-thieu">Giới thiệu</a>
+            <a class="active" th:href="@{/thong-tin-tuyen-sinh}" href="/thong-tin-tuyen-sinh">Thông tin tuyển sinh</a>
+            <a th:href="@{/tracuu}" href="/tracuu">Tra cứu</a>
+        </nav>
+
+        <a th:href="@{/logout}" href="/logout" class="btn-ghost">Đăng xuất</a>
+    </header>
+
+    <main class="site-content">
+        <section class="card reveal info-card">
+            <p class="eyebrow">Thông tin tuyển sinh</p>
+            <h1>Thông tin tuyển sinh năm 2025</h1>
+            <p class="muted">Cập nhật các phương thức xét tuyển, mốc thời gian và thông tin hỗ trợ dành cho thí sinh đăng ký vào trường.</p>
+
+            <div class="info-grid">
+                <article>
+                    <h3>Phương thức xét tuyển</h3>
+                    <p>Xét tuyển theo điểm kỳ thi THPT, học bạ THPT và các phương thức theo đề án tuyển sinh của trường.</p>
+                </article>
+                <article>
+                    <h3>Mốc thời gian quan trọng</h3>
+                    <p>Đợt đăng ký, công bố kết quả và xác nhận nhập học được thông báo theo lịch chính thức của trường.</p>
+                </article>
+                <article>
+                    <h3>Hỗ trợ thí sinh</h3>
+                    <p>Thí sinh cần hỗ trợ vui lòng liên hệ phòng tuyển sinh qua email hoặc hotline để được giải đáp.</p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer class="card reveal site-footer">
+        <p>© 2025 Trường Đại học Ánh Trường - Cổng tra cứu tuyển sinh</p>
+        <p>Email: tuyensinh@anhtruong.edu.vn | Hotline: 1900 2025</p>
+    </footer>
+</div>
+</body>
+</html>
