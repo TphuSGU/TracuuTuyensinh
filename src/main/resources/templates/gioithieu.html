@@ -33,7 +33,10 @@
             <a th:href="@{/tracuu}" href="/tracuu">Tra cứu</a>
         </nav>
 
-        <a th:href="@{/logout}" href="/logout" class="btn-ghost">Đăng xuất</a>
+        <form th:action="@{/logout}" method="post" class="logout-form">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit" class="btn-ghost">Đăng xuất</button>
+        </form>
     </header>
 
     <main class="site-content">

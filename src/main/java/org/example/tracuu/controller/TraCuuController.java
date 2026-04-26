@@ -63,12 +63,4 @@ public class TraCuuController {
         model.addAttribute("message", "Bạn không trúng tuyển vào trường");
         return "tracuu";
     }
-
-    @GetMapping("/ketqua")
-    public String ketQuaRedirect(@RequestParam(required = false) String sbd) {
-        if (sbd != null && !sbd.isBlank()) {
-            return "redirect:/tracuu?sbd=" + sbd.trim();
-        }
-        return "redirect:/tracuu";
-    }
 }
