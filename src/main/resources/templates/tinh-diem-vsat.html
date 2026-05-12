@@ -9,28 +9,16 @@
 
     <!-- Main Content Canvas -->
     <main class="flex-grow w-full max-w-container-max mx-auto px-gutter py-stack-lg flex flex-col gap-stack-lg mt-stack-md">
-        <!-- Debug Info (Remove in production) -->
-        <div th:if="${errorMessage}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-            <strong class="font-bold">Lỗi!</strong>
-            <span class="block sm:inline" th:text="${errorMessage}"></span>
-        </div>
-        <div class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2 rounded text-sm" th:if="${totalMajors != null}">
-            <strong>Debug:</strong> Đã tải <span th:text="${totalMajors}">0</span> ngành từ database, 
-            trong đó <span th:text="${danhSachNganh != null ? danhSachNganh.size() : 0}">0</span> ngành hỗ trợ VSAT.
-        </div>
-        
+       
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-lg items-start">
             
             <!-- Left Column: Input Form -->
             <div class="lg:col-span-7 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm flex flex-col">
                 <div class="p-stack-md border-b border-outline-variant flex justify-between items-center bg-surface rounded-t-xl">
                     <h2 class="font-h2 text-h2 text-primary flex items-center gap-2">
-                        Thông tin xét tuyển
+                      Tính điểm VSAT/THPT
                     </h2>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs text-on-surface-variant font-medium uppercase tracking-tighter">Hỗ trợ 8 môn</span>
-                        <span class="material-symbols-outlined text-primary-variant">calculate</span>
-                    </div>
+                  
                 </div>
 
                 <form id="calc-form" class="p-stack-md space-y-8">
@@ -191,11 +179,17 @@
                     <span class="material-symbols-outlined absolute right-[-20px] top-[-10px] text-[180px] opacity-[0.05] pointer-events-none" style="font-variation-settings: 'wght' 200;">school</span>
                     
                     <div>
-                        <h2 class="text-xl font-bold mb-1">Điểm xét tuyển dự kiến</h2>
+                        <h2 class="text-xl font-bold mb-1">Điểm xét tuyển</h2>
                         <div class="flex flex-col gap-0.5">
-                            <p class="text-sm text-blue-200/70 italic" id="res-major-title">Ngành: -- (Dự kiến)</p>
-                            <p class="text-xs font-semibold text-yellow-400/90 hidden" id="res-major-floor-container">
-                                <span class="opacity-70">Điểm sàn:</span> <span id="res-major-floor">--</span>
+                            <p  class="text-xs font-semibold text-white/80 opacity-70" id="res-major-title">Ngành:</p>
+                            <p class="text-xs font-semibold text-white/80" id="res-major-tohopgoc-container">
+                                <span class="opacity-70">Tổ hợp gốc:</span> <span id="res-major-tohopgoc"></span>
+                            </p>
+                            <p class="text-xs font-semibold text-white/80" id="res-major-floor-container">
+                                <span class="opacity-70">Điểm sàn:</span> <span id="res-major-floor"></span>
+                            </p>
+                            <p class="text-xs font-semibold text-white/80" id="res-major-pass-container">
+                                <span class="opacity-70">Điểm trúng tuyển:</span> <span id="res-major-pass"></span>
                             </p>
                         </div>
                     </div>
@@ -208,12 +202,7 @@
                         </div>
                     </div>
 
-                    <div class="mt-auto flex justify-between items-center border-t border-white/10 pt-4">
-                        <div class="text-sm text-blue-100/80">
-                            Điểm ưu tiên: <span class="font-bold" id="res-priority">--</span>
-                        </div>
-                        <div class="bg-white text-[#001e2f] px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider" id="calc-status">Sẵn sàng</div>
-                    </div>
+                    
                 </div>
 
                 <div class="text-center" id="hint-text" style="display: none;">
@@ -308,21 +297,23 @@
             if (!majorCode) return;
             
             const majorName = selectedOption.textContent.split(' - ')[1] || majorCode;
-            const diemSan = parseFloat(selectedOption.getAttribute('data-diemsan')) || 0;
-            const diemTrungTuyen = parseFloat(selectedOption.getAttribute('data-diemtrungtuyen')) || 0;
+            const diemSanRaw = selectedOption.getAttribute('data-diemsan');
+            const diemTrungTuyenRaw = selectedOption.getAttribute('data-diemtrungtuyen');
+            const diemSan = parseFloat(diemSanRaw);
+            const diemTrungTuyen = parseFloat(diemTrungTuyenRaw);
             currentTohopGoc = selectedOption.getAttribute('data-tohopgoc') || '';
             
             console.log('Selected major:', majorCode, majorName, 'DiemSan:', diemSan, 'DiemTT:', diemTrungTuyen);
             
             document.getElementById('res-major-title').innerText = `Ngành: ${majorName} (Dự kiến)`;
             
-            const floorContainer = document.getElementById('res-major-floor-container');
-            if (diemSan > 0) {
-                document.getElementById('res-major-floor').innerText = diemSan.toFixed(2);
-                floorContainer.classList.remove('hidden');
-            } else {
-                floorContainer.classList.add('hidden');
-            }
+            const floorValue = Number.isFinite(diemSan) && diemSan > 0 ? diemSan.toFixed(2) : 'Chưa công bố';
+            const passValue = Number.isFinite(diemTrungTuyen) && diemTrungTuyen > 0 ? diemTrungTuyen.toFixed(2) : 'Chưa công bố';
+            const tohopGocValue = currentTohopGoc ? currentTohopGoc : 'Chưa công bố';
+
+            document.getElementById('res-major-floor').innerText = floorValue;
+            document.getElementById('res-major-pass').innerText = passValue;
+            document.getElementById('res-major-tohopgoc').innerText = tohopGocValue;
             
             // Tải tổ hợp của ngành này
             try {
@@ -704,11 +695,21 @@
                 comboContainer.appendChild(card);
             });
 
-            document.getElementById('res-priority').innerText = totalP > 0 ? `+${totalP}` : '0';
-            document.getElementById('hint-text').style.display = 'block';
+            const priorityEl = document.getElementById('res-priority');
+            if (priorityEl) {
+                priorityEl.innerText = totalP > 0 ? `+${totalP}` : '0';
+            }
+
+            const hintText = document.getElementById('hint-text');
+            if (hintText) {
+                hintText.style.display = 'block';
+            }
+
             const status = document.getElementById('calc-status');
-            status.innerText = 'Đã cập nhật';
-            status.className = 'bg-green-500 text-white px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-lg';
+            if (status) {
+                status.innerText = 'Đã cập nhật';
+                status.className = 'bg-green-500 text-white px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-lg';
+            }
 
             const resultsSection = document.getElementById('combination-results');
             if (resultsSection) {

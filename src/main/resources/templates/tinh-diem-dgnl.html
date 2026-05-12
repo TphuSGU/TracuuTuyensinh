@@ -9,13 +9,13 @@
 
     <!-- Main Content Canvas -->
     <main class="max-w-container-max mx-auto px-gutter py-stack-lg min-h-screen">
-        <header class="mb-stack-lg">
+        <!-- <header class="mb-stack-lg">
             <h1 class="font-h1 text-h1 text-primary mb-unit">Tính điểm Đánh giá năng lực</h1>
             <p class="font-body-lg text-body-lg text-on-surface-variant">Quy đổi điểm thi ĐGNL (ĐHQG HCM/HN) về thang
                 điểm 30 và kiểm tra điều kiện xét tuyển.</p>
             
          
-        </header>
+        </header> -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-lg">
             <!-- Calculator Input Form -->
             <section
@@ -23,7 +23,7 @@
                 <div class="flex items-center gap-stack-sm mb-stack-md pb-stack-sm border-b border-surface-variant">
                     <span class="material-symbols-outlined text-primary"
                         style="font-variation-settings: 'FILL' 1;">calculate</span>
-                    <h2 class="font-h2 text-h2 text-primary">Thông tin xét tuyển</h2>
+                    <h2 class="font-h2 text-h2 text-primary">Tính điểm Đánh giá năng lực</h2>
                 </div>
                 <form class="space-y-stack-md">
                     <!-- Score Input -->
@@ -63,20 +63,10 @@
                             <select
                                 class="w-full bg-surface-bright border border-outline-variant rounded px-4 py-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none appearance-none"
                                 id="priority-object">
-                                <option selected value="0">Không có (0 điểm)</option>
-                                <optgroup label="Nhóm UT1 - Thương binh, con liệt sĩ, dân tộc thiểu số KV1 (+2.00 điểm)">
-                                    <option value="2">ĐT 01 - Thương binh, con liệt sĩ (+2.00 đ)</option>
-                                    <option value="2">ĐT 02 - Con thương binh suy giảm ≥81% (+2.00 đ)</option>
-                                    <option value="2">ĐT 03 - Dân tộc thiểu số ở KV1 (+2.00 đ)</option>
-                                    <option value="2">ĐT 04 - Con của người hoạt động cách mạng (+2.00 đ)</option>
-                                </optgroup>
-                                <optgroup label="Nhóm UT2 - Dân tộc thiểu số, giáo viên vùng khó khăn (+1.00 điểm)">
-                                    <option value="1">ĐT 05 - Dân tộc thiểu số ngoài KV1 (+1.00 đ)</option>
-                                    <option value="1">ĐT 06 - Con thương binh suy giảm &lt;81% (+1.00 đ)</option>
-                                    <option value="1">ĐT 07 - Giáo viên có 3 năm công tác (+1.00 đ)</option>
-                                </optgroup>
+                                <option value="0">Không có (0 đ)</option>
+                                <option value="2">Ưu tiên 1 (+2.0 đ)</option>
+                                <option value="1">Ưu tiên 2 (+1.0 đ)</option>
                             </select>
-                            <p class="text-[11px] text-on-surface-variant mt-1 italic">Chọn đối tượng ưu tiên theo giấy chứng nhận</p>
                         </div>
                         <!-- Priority Area -->
                         <div>
@@ -85,12 +75,11 @@
                             <select
                                 class="w-full bg-surface-bright border border-outline-variant rounded px-4 py-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none appearance-none"
                                 id="priority-area">
-                                <option selected value="KV3">KV3 - Quận nội thành TP trực thuộc TW (0 điểm)</option>
-                                <option value="KV2">KV2 - Thị xã, thành phố thuộc tỉnh (+0.25 đ)</option>
-                                <option value="KV2NT">KV2-NT - Khu vực 2 nông thôn (+0.50 đ)</option>
-                                <option value="KV1">KV1 - Vùng dân tộc thiểu số, miền núi, hải đảo (+0.75 đ)</option>
+                                <option value="0">Khu vực 3 (0 đ)</option>
+                                <option value="0.25">Khu vực 2 (+0.25 đ)</option>
+                                <option value="0.5">Khu vực 2-NT (+0.5 đ)</option>
+                                <option value="0.75">Khu vực 1 (+0.75 đ)</option>
                             </select>
-                            <p class="text-[11px] text-on-surface-variant mt-1 italic">Khu vực theo nơi học THPT</p>
                         </div>
                     </div>
                     <!-- Bonus Score -->
@@ -119,27 +108,9 @@
             </section>
             <!-- Results Panel -->
             <section class="lg:col-span-5 flex flex-col gap-stack-md">
-                <!-- Converted Score Card -->
-                <div class="bg-primary-fixed border border-primary-fixed-dim rounded-xl p-gutter shadow-[0px_4px_20px_rgba(0,0,0,0.05)] relative overflow-hidden">
-                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-white opacity-20 rounded-full blur-2xl"></div>
-                    <h3 class="font-h3 text-h3 text-on-primary-fixed mb-unit relative z-10">Điểm Quy Đổi Thang 30</h3>
-                    <p class="font-body-md text-body-md text-on-primary-fixed-variant mb-stack-md relative z-10">Đã bao gồm điểm ưu tiên đối tượng và khu vực.</p>
-                    <div class="flex items-end gap-2 relative z-10">
-                        <span class="text-[56px] leading-none font-bold text-primary tracking-tight" id="result-score">--</span>
-                        <span class="font-h3 text-h3 text-primary-container pb-2">/ 30</span>
-                    </div>
-                    <div class="mt-stack-md pt-stack-md border-t border-primary-fixed-dim/50 grid grid-cols-2 gap-4 relative z-10">
-                        <div>
-                            <span class="block font-label-sm text-label-sm text-on-primary-fixed-variant mb-unit">Quy đổi gốc</span>
-                            <span class="font-body-lg text-body-lg font-semibold text-primary" id="base-score">--</span>
-                        </div>
-                        <div>
-                            <span class="block font-label-sm text-label-sm text-on-primary-fixed-variant mb-unit">Tổng ưu tiên</span>
-                            <span class="font-body-lg text-body-lg font-semibold text-primary" id="total-priority">--</span>
-                        </div>
-                    </div>
+                <div class="flex justify-center bg-white/80 border border-outline-variant rounded-xl py-3 shadow-sm">
+                    <h2 class="font-h2 text-h2 text-primary tracking-wide">Kết Quả Quy Đổi</h2>
                 </div>
-
                 <!-- Detailed Breakdown Table -->
                 <div id="detail-table-container" class="hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
@@ -292,9 +263,8 @@
                 console.log('Không có rules cho tổ hợp:', mainTohop);
             }
 
-            const priorityObj = parseFloat(document.getElementById('priority-object').value);
-            const areaMap = { 'KV3': 0, 'KV2': 0.25, 'KV2NT': 0.5, 'KV1': 0.75 };
-            const areaScore = areaMap[document.getElementById('priority-area').value] || 0;
+            const priorityObj = parseFloat(document.getElementById('priority-object').value) || 0;
+            const areaScore = parseFloat(document.getElementById('priority-area').value) || 0;
             const bonusScore = parseFloat(document.getElementById('bonus-score').value) || 0;
 
             // Tổng điểm ưu tiên + khuyến khích (khu vực + đối tượng + khuyến khích)
@@ -319,10 +289,21 @@
                 total = maxTotal;
             }
 
-            // Cập nhật thẻ điểm chính
-            document.getElementById('base-score').innerText = base.toFixed(2);
-            document.getElementById('total-priority').innerText = totalPriorityAndBonus.toFixed(2);
-            document.getElementById('result-score').innerText = total.toFixed(2);
+            // Cập nhật thẻ điểm chính (nếu còn hiển thị)
+            const baseScoreEl = document.getElementById('base-score');
+            if (baseScoreEl) {
+                baseScoreEl.innerText = base.toFixed(2);
+            }
+
+            const totalPriorityEl = document.getElementById('total-priority');
+            if (totalPriorityEl) {
+                totalPriorityEl.innerText = totalPriorityAndBonus.toFixed(2);
+            }
+
+            const resultScoreEl = document.getElementById('result-score');
+            if (resultScoreEl) {
+                resultScoreEl.innerText = total.toFixed(2);
+            }
 
             // Kiểm tra điều kiện xét tuyển
             let statusHtml = '';
@@ -339,7 +320,7 @@
             } else if (diemTrungTuyenCongBo) {
                 // Điểm trúng tuyển đã công bố
                 if (total >= diemTrungTuyen) {
-                    statusHtml = `<span class="material-symbols-outlined text-success" style="font-variation-settings: 'FILL' 1;">check_circle</span> Đạt điểm trúng tuyển năm trước (${diemTrungTuyen.toFixed(2)})`;
+                    statusHtml = `<span class="material-symbols-outlined text-success" style="font-variation-settings: 'FILL' 1;">check_circle</span> Đạt điểm trúng tuyển (${diemTrungTuyen.toFixed(2)})`;
                     statusClass = 'bg-success-container/50 text-on-success-container';
                 } else if (diemSanCongBo && total >= diemSan) {
                     statusHtml = `<span class="material-symbols-outlined text-warning" style="font-variation-settings: 'FILL' 1;">warning</span> Đạt điểm sàn (${diemSan.toFixed(2)}) nhưng chưa đạt điểm trúng tuyển (${diemTrungTuyen.toFixed(2)})`;
@@ -413,7 +394,7 @@
                     <td class="py-3 px-4 text-on-surface-variant font-semibold">${totalPriorityAndBonus.toFixed(2)}</td>
                 </tr>
                 <tr class="bg-primary/5 font-bold border-t-2 border-outline-variant">
-                    <td class="py-3 px-4 text-primary italic">Điểm xét tuyển cuối cùng${totalNote}</td>
+                    <td class="py-3 px-4 text-primary">Điểm xét tuyển cuối cùng${totalNote}</td>
                     <td class="py-3 px-4">
                         <span class="bg-primary text-on-primary px-3 py-1 rounded text-base shadow-sm">
                             ${total.toFixed(2)}
@@ -421,11 +402,11 @@
                     </td>
                 </tr>
                 <tr class="border-t-2 border-outline-variant">
-                    <td class="py-3 px-4 text-on-surface font-medium">Điểm sàn ngành này</td>
+                    <td class="py-3 px-4 text-on-surface font-medium">Điểm sàn </td>
                     <td class="py-3 px-4 text-on-surface-variant">${diemSanHtml}</td>
                 </tr>
                 <tr class="bg-surface-container-low/30">
-                    <td class="py-3 px-4 text-on-surface font-medium">Điểm trúng tuyển năm trước</td>
+                    <td class="py-3 px-4 text-on-surface font-medium">Điểm trúng tuyển</td>
                     <td class="py-3 px-4 text-on-surface-variant">${diemTrungTuyenHtml}</td>
                 </tr>
                 ${statusHtml ? `

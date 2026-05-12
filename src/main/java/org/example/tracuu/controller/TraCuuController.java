@@ -99,12 +99,9 @@ public class TraCuuController {
 
     @GetMapping("/tinh-diem-vsat")
     public String tinhDiemVsat(Model model) {
-        System.out.println("=== TINH DIEM VSAT CONTROLLER ===");
-        
         try {
             // Lấy tất cả ngành
             java.util.List<Nganh> tatCaNganh = admissionService.layTatCaNganh();
-            System.out.println("Total majors from DB: " + tatCaNganh.size());
             
             // Lấy danh sách ngành hỗ trợ VSAT
             // Chấp nhận cả "x", "X", "Có", "có", "CO", "co"
@@ -117,15 +114,9 @@ public class TraCuuController {
                     })
                     .collect(java.util.stream.Collectors.toList());
             
-            System.out.println("VSAT majors filtered: " + danhSachNganh.size());
-            
-            if (!danhSachNganh.isEmpty()) {
-                System.out.println("First major: " + danhSachNganh.get(0).getManganh() + " - " + danhSachNganh.get(0).getTennganh());
-            } else {
-                System.out.println("WARNING: No VSAT majors found!");
+            if (danhSachNganh.isEmpty()) {
                 // Nếu không có ngành VSAT, lấy tất cả ngành để test
                 danhSachNganh = tatCaNganh;
-                System.out.println("Using all majors for testing: " + danhSachNganh.size());
             }
             
             model.addAttribute("danhSachNganh", danhSachNganh);
@@ -133,7 +124,6 @@ public class TraCuuController {
             
             // Lấy bảng quy đổi VSAT
             java.util.List<BangQuyDoi> bangQuyDoiVSAT = admissionService.layBangQuyDoiTheoPhuongThuc("VSAT");
-            System.out.println("VSAT conversion rules: " + bangQuyDoiVSAT.size());
             model.addAttribute("bangQuyDoiVSAT", bangQuyDoiVSAT);
             
         } catch (Exception e) {
@@ -202,6 +192,7 @@ public class TraCuuController {
                     admissionService.timNganhTheoMa(nvTrungTuyen.getManganh().trim()).ifPresent(nganh -> {
                         System.out.println(">>> TraCuu: Ten nganh = " + nganh.getTennganh());
                         model.addAttribute("tenNganhTrungTuyen", nganh.getTennganh());
+                        model.addAttribute("diemChuanTrungTuyen", nganh.getDiemTrungTuyen());
                     });
                 } else {
                     System.out.println(">>> TraCuu: Khong trung tuyen");
