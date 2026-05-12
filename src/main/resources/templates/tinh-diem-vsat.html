@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Tính điểm xét tuyển VSAT - Cổng Tuyển Sinh')}"></head>
+
+<body class="bg-background text-on-background min-h-screen flex flex-col pt-16">
+    <!-- TopNavBar -->
+    <nav th:replace="~{fragments :: header('vsat')}"></nav>
+
+    <!-- Main Content Canvas -->
+    <main class="flex-grow w-full max-w-container-max mx-auto px-gutter py-stack-lg flex flex-col gap-stack-lg mt-stack-md">
+        <!-- Debug Info (Remove in production) -->
+        <div th:if="${errorMessage}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <strong class="font-bold">Lỗi!</strong>
+            <span class="block sm:inline" th:text="${errorMessage}"></span>
+        </div>
+        <div class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2 rounded text-sm" th:if="${totalMajors != null}">
+            <strong>Debug:</strong> Đã tải <span th:text="${totalMajors}">0</span> ngành từ database, 
+            trong đó <span th:text="${danhSachNganh != null ? danhSachNganh.size() : 0}">0</span> ngành hỗ trợ VSAT.
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-lg items-start">
+            
+            <!-- Left Column: Input Form -->
+            <div class="lg:col-span-7 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm flex flex-col">
+                <div class="p-stack-md border-b border-outline-variant flex justify-between items-center bg-surface rounded-t-xl">
+                    <h2 class="font-h2 text-h2 text-primary flex items-center gap-2">
+                        Thông tin xét tuyển
+                    </h2>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-on-surface-variant font-medium uppercase tracking-tighter">Hỗ trợ 8 môn</span>
+                        <span class="material-symbols-outlined text-primary-variant">calculate</span>
+                    </div>
+                </div>
+
+                <form id="calc-form" class="p-stack-md space-y-8">
+                    <!-- Admission Method & Major Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <label class="block font-label-sm text-label-sm text-on-surface-variant mb-3 uppercase tracking-wider">Phương thức xét tuyển</label>
+                            <div class="flex gap-6">
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input checked class="text-primary focus:ring-primary h-5 w-5 cursor-pointer" name="method" type="radio" value="vsat" id="method-vsat" onchange="updateScoreInputs('vsat')"/>
+                                    <span class="font-body-md text-on-surface group-hover:text-primary transition-colors">V-SAT</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input class="text-primary focus:ring-primary h-5 w-5 cursor-pointer" name="method" type="radio" value="thpt" id="method-thpt" onchange="updateScoreInputs('thpt')"/>
+                                    <span class="font-body-md text-on-surface group-hover:text-primary transition-colors">THPT</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-wider">Ngành xét tuyển</label>
+                            <select class="w-full font-body-md text-body-md border border-outline-variant rounded-lg p-2.5 focus:border-primary focus:ring-1 focus:ring-primary bg-surface text-on-surface outline-none transition-all appearance-none pr-10" 
+                                    id="major-select" onchange="onMajorChange()" style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1.2em;">
+                                <option value="" disabled selected>-- Chọn ngành xét tuyển --</option>
+                                <option th:if="${danhSachNganh != null}" th:each="nganh : ${danhSachNganh}" 
+                                        th:value="${nganh.manganh}" 
+                                        th:text="${nganh.manganh + ' - ' + nganh.tennganh}"
+                                        th:attr="data-diemsan=${nganh.diemSan}, data-diemtrungtuyen=${nganh.diemTrungTuyen}, data-tohopgoc=${nganh.tohopGoc}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 8 Subjects Grid -->
+                    <div>
+                        <h3 class="font-table-header text-table-header text-on-surface-variant border-b border-outline-variant pb-2 uppercase tracking-wider mb-6">Điểm các môn thi</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-x-10 gap-y-5">
+                            <!-- Column 1 -->
+                            <div class="space-y-4">
+                                <div class="score-input-group">
+                                    <label class="block font-label-sm text-label-sm text-on-surface mb-1">Toán học</label>
+                                    <div class="relative flex items-center">
+                                        <input class="w-full font-body-md text-body-md border border-outline-variant rounded-lg p-2 focus:border-primary focus:ring-1 focus:ring-primary bg-surface pr-14 text-on-surface outline-none transition-all" id="m-toan" placeholder="0" step="1" type="number" oninput="handleNumericInput(this)"/>
+                                        <span class="absolute right-3 font-label-sm text-on-surface-variant/60 text-xs">/ 150</span>
+                                    </div>
+                                    <p class="mt-1 text-xs text-red-600 hidden" id="err-m-toan"></p>
+                                </div>
+                                <div class="score-input-group">
+                                    <label class="block font-label-sm text-label-sm text-on-surface mb-1">Vật lý</label>
+                                    <div class="relative flex items-center">
+                                        <input class="w-full font-body-md text-body-md border border-outline-variant rounded-lg p-2 focus:border-primary focus:ring-1 focus:ring-primary bg-surface pr-14 text-on-surface outline-none transition-all" id="m-ly" placeholder="0" step="1" type="number" oninput="handleNumericInput(this)"/>
+                                        <span class="absolute right-3 font-label-sm text-on-surface-variant/60 text-xs">/ 150</span>
+                                    </div>
+                                    <p class="mt-1 text-xs text-red-600 hidden" id="err-m-ly"></p>
+                                </div>
+                                <div class="score-input-group">
+                                    <label class="block font-label-sm text-label-sm text-on-surface mb-1">Hóa học</label>
+                                    <div class="relative flex items-center">
+                                        <input class="w-full font-body-md text-body-md border border-outline-variant rounded-lg p-2 focus:border-primary focus:ring-1 focus:ring-primary bg-surface pr-14 text-on-surface outline-none transition-all" id="m-hoa" placeholder="0" step="1" type="number" oninput="handleNumericInput(this)"/>
+                                        <span class="absolute right-3 font-label-sm text-on-surface-variant/60 text-xs">/ 150</span>
+                                    </div>
+                                    <p class="mt-1 text-xs text-red-600 hidden" id="err-m-hoa"></p>
+                                </div>
+                                <div class="score-input-group">
+                                    <label class="block font-label-sm text-label-sm text-on-surface mb-1">Sinh học</label>
+                                    <div class="relative flex items-center">
+                                        <input class="w-full font-body-md text-body-md border border-outline-variant rounded-lg p-2 focus:border-primary focus:ring-1 focus:ring-primary bg-surface pr-14 text-on-surface outline-none transition-all" id="m-sinh" placeholder="0" step="1" type="number" oninput="handleNumericInput(this)"/>
+                                        <span class="absolute right-3 font-label-sm text-on-surface-variant/60 text-xs">/ 150</span>
+                                    </div>
+                                    <p class="mt-1 text-xs text-red-600 hidden" id="err-m-sinh"></p>
+                                </div>
+                            </div>
+                            <!-- Column 2 -->
+                            <div class="space-y-4">
+                                <div class="score-input-group">
+                                    <label class="block font-label-sm text-label-sm text-on-surface mb-1">Ngữ văn</label>
+                                    <div class="relative flex items-center">
+                                        <input class="w-full font-body-md text-body-md border border-outline-variant rounded-lg p-2 focus:border-primary focus:ring-1 focus:ring-primary bg-surface pr-14 text-on-surface outline-none transition-all" id="m-van" placeholder="0" step="1" type="number" oninput="handleNumericInput(this)"/>
+                                        <span class="absolute right-3 font-label-sm text-on-surface-variant/60 text-xs">/ 150</span>
+                                    </div>
+                                    <p class="mt-1 text-xs text-red-600 hidden" id="err-m-van"></p>
+                                </div>
+                                <div class="score-input-group">
+                                    <label class="block font-label-sm text-label-sm text-on-surface mb-1">Lịch sử</label>
+                                    <div class="relative flex items-center">
+                                        <input class="w-full font-body-md text-body-md border border-outline-variant rounded-lg p-2 focus:border-primary focus:ring-1 focus:ring-primary bg-surface pr-14 text-on-surface outline-none transition-all" id="m-su" placeholder="0" step="1" type="number" oninput="handleNumericInput(this)"/>
+                                        <span class="absolute right-3 font-label-sm text-on-surface-variant/60 text-xs">/ 150</span>
+                                    </div>
+                                    <p class="mt-1 text-xs text-red-600 hidden" id="err-m-su"></p>
+                                </div>
+                                <div class="score-input-group">
+                                    <label class="block font-label-sm text-label-sm text-on-surface mb-1">Địa lý</label>
+                                    <div class="relative flex items-center">
+                                        <input class="w-full font-body-md text-body-md border border-outline-variant rounded-lg p-2 focus:border-primary focus:ring-1 focus:ring-primary bg-surface pr-14 text-on-surface outline-none transition-all" id="m-dia" placeholder="0" step="1" type="number" oninput="handleNumericInput(this)"/>
+                                        <span class="absolute right-3 font-label-sm text-on-surface-variant/60 text-xs">/ 150</span>
+                                    </div>
+                                    <p class="mt-1 text-xs text-red-600 hidden" id="err-m-dia"></p>
+                                </div>
+                                <div class="score-input-group">
+                                    <label class="block font-label-sm text-label-sm text-on-surface mb-1">Tiếng Anh</label>
+                                    <div class="relative flex items-center">
+                                        <input class="w-full font-body-md text-body-md border border-outline-variant rounded-lg p-2 focus:border-primary focus:ring-1 focus:ring-primary bg-surface pr-14 text-on-surface outline-none transition-all" id="m-anh" placeholder="0" step="1" type="number" oninput="handleNumericInput(this)"/>
+                                        <span class="absolute right-3 font-label-sm text-on-surface-variant/60 text-xs">/ 150</span>
+                                    </div>
+                                    <p class="mt-1 text-xs text-red-600 hidden" id="err-m-anh"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Priority Section -->
+                    <div class="bg-surface-container-low p-5 rounded-xl border border-outline-variant/50">
+                        <h3 class="font-label-sm text-label-sm text-on-surface-variant mb-4 uppercase tracking-wider">Điểm cộng(<=3)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block font-label-sm text-label-sm text-on-surface mb-1">Đối tượng ưu tiên</label>
+                                <select class="w-full font-body-md text-body-md border border-outline-variant rounded-lg p-2.5 focus:border-primary focus:ring-1 focus:ring-primary bg-surface text-on-surface outline-none transition-all" id="priority-obj" onchange="updateCalculations()">
+                                    <option value="0">Không có (0 đ)</option>
+                                    <option value="2">Ưu tiên 1 (+2.0 đ)</option>
+                                    <option value="1">Ưu tiên 2 (+1.0 đ)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-label-sm text-label-sm text-on-surface mb-1">Khu vực ưu tiên</label>
+                                <select class="w-full font-body-md text-body-md border border-outline-variant rounded-lg p-2.5 focus:border-primary focus:ring-1 focus:ring-primary bg-surface text-on-surface outline-none transition-all" id="priority-area" onchange="updateCalculations()">
+                                    <option value="0">Khu vực 3 (0 đ)</option>
+                                    <option value="0.25">Khu vực 2 (+0.25 đ)</option>
+                                    <option value="0.5">Khu vực 2-NT (+0.5 đ)</option>
+                                    <option value="0.75">Khu vực 1 (+0.75 đ)</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block font-label-sm text-label-sm text-on-surface mb-1">Điểm cộng khuyến khích</label>
+                                <div class="relative flex items-center">
+                                    <input class="w-full font-body-md text-body-md border border-outline-variant rounded-lg p-2 focus:border-primary focus:ring-1 focus:ring-primary bg-surface text-on-surface outline-none transition-all" id="m-diemcong" placeholder="0.00" step="0.01" type="number" oninput="handleNumericInput(this)"/>
+                                </div>
+                                <p class="mt-1 text-xs text-red-600 hidden" id="err-m-diemcong"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-4 border-t border-outline-variant">
+                        <button type="button" onclick="resetForm()" class="px-6 py-2.5 border border-outline-variant text-on-surface font-label-md rounded-lg hover:bg-surface-container transition-all">Làm lại</button>
+                        <button type="button" onclick="calculateFinal()" class="px-8 py-2.5 bg-primary text-on-primary font-label-md rounded-lg hover:bg-primary-variant shadow-md transition-all">Tính điểm</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Results -->
+            <div class="lg:col-span-5 flex flex-col gap-stack-md">
+                <!-- Conversion Table Card (HIDDEN AS REQUESTED) -->
+                <div id="conversion-card" class="hidden bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+                    <!-- ... hidden content ... -->
+                </div>
+
+                <!-- Dark Theme Score Result Card -->
+                <div class="bg-[#001e2f] text-white rounded-xl shadow-xl p-6 relative overflow-hidden flex flex-col gap-6 min-h-[300px]">
+                    <!-- Background Decoration -->
+                    <span class="material-symbols-outlined absolute right-[-20px] top-[-10px] text-[180px] opacity-[0.05] pointer-events-none" style="font-variation-settings: 'wght' 200;">school</span>
+                    
+                    <div>
+                        <h2 class="text-xl font-bold mb-1">Điểm xét tuyển dự kiến</h2>
+                        <div class="flex flex-col gap-0.5">
+                            <p class="text-sm text-blue-200/70 italic" id="res-major-title">Ngành: -- (Dự kiến)</p>
+                            <p class="text-xs font-semibold text-yellow-400/90 hidden" id="res-major-floor-container">
+                                <span class="opacity-70">Điểm sàn:</span> <span id="res-major-floor">--</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4" id="combination-results" tabindex="-1">
+                        <!-- Empty State Placeholder -->
+                        <div class="col-span-2 flex flex-col items-center justify-center py-10 opacity-30 border-2 border-dashed border-white/20 rounded-xl" id="results-empty-state">
+                            <span class="material-symbols-outlined text-5xl mb-2">calculate</span>
+                            <p class="text-sm">Vui lòng nhập điểm và nhấn "Tính điểm ngay"</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto flex justify-between items-center border-t border-white/10 pt-4">
+                        <div class="text-sm text-blue-100/80">
+                            Điểm ưu tiên: <span class="font-bold" id="res-priority">--</span>
+                        </div>
+                        <div class="bg-white text-[#001e2f] px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider" id="calc-status">Sẵn sàng</div>
+                    </div>
+                </div>
+
+                <div class="text-center" id="hint-text" style="display: none;">
+                    <p class="text-xs text-on-surface-variant italic">* Nhấn vào từng tổ hợp để xem chi tiết cách tính điểm</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Calculation Modal -->
+    <div id="calc-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/60 transition-opacity duration-300">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col">
+            <!-- Modal Header -->
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-white shrink-0">
+                <h3 class="text-xl font-bold text-[#001e2f] flex items-center gap-3">
+                    <span class="material-symbols-outlined text-2xl">receipt_long</span>
+                    Chi tiết tính toán điểm xét tuyển
+                </h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <!-- Modal Body (Scrollable) -->
+            <div class="p-6 overflow-y-auto max-h-[70vh]">
+                <div id="modal-content">
+                    <!-- Table content injected here -->
+                </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 shrink-0">
+                <button class="px-6 py-2 border border-[#001e2f] text-[#001e2f] rounded-lg font-bold hover:bg-gray-100 transition-all text-sm">Tải xuống kết quả (.PDF)</button>
+                <button onclick="closeModal()" class="px-8 py-2 bg-[#001e2f] text-white rounded-lg font-bold hover:opacity-90 transition-all text-sm">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // --- DỮ LIỆU TỪ THYMELEAF ---
+        const danhSachNganh = /*[[${danhSachNganh}]]*/ [];
+        const vsatConversionRules = /*[[${bangQuyDoiVSAT}]]*/ [];
+        
+        let currentCombinations = [];
+        let currentTohopGoc = '';
+
+        // Debug: Xem cấu trúc dữ liệu
+        console.log('=== DEBUG VSAT Data ===');
+        console.log('Total majors:', danhSachNganh ? danhSachNganh.length : 0);
+        console.log('Total conversion rules:', vsatConversionRules ? vsatConversionRules.length : 0);
+        if (danhSachNganh && danhSachNganh.length > 0) {
+            console.log('First major:', danhSachNganh[0]);
+        } else {
+            console.warn('No majors loaded from server!');
+        }
+        if (vsatConversionRules && vsatConversionRules.length > 0) {
+            console.log('First rule:', vsatConversionRules[0]);
+        } else {
+            console.warn('No conversion rules loaded from server!');
+        }
+
+        const subjectNames = {
+            'TO': 'Toán học', 'VA': 'Ngữ văn', 'AN': 'Tiếng Anh', 'LI': 'Vật lý',
+            'HO': 'Hóa học', 'SI': 'Sinh học', 'SU': 'Lịch sử', 'DI': 'Địa lý', 'GD': 'GDCD'
+        };
+
+        const subjectCodeMap = {
+            'TO': 'TO', 'TOAN': 'TO', 'TOÁN': 'TO', 'TOÁN HỌC': 'TO', 'TOAN HOC': 'TO',
+            'VA': 'VA', 'VAN': 'VA', 'VĂN': 'VA', 'NGU VAN': 'VA', 'NGỮ VĂN': 'VA',
+            'AN': 'AN', 'ANH': 'AN', 'TIENG ANH': 'AN', 'TIẾNG ANH': 'AN',
+            'LI': 'LI', 'LY': 'LI', 'LÝ': 'LI', 'VAT LY': 'LI', 'VẬT LÝ': 'LI',
+            'HO': 'HO', 'HOA': 'HO', 'HÓA': 'HO', 'HOA HOC': 'HO', 'HÓA HỌC': 'HO',
+            'SI': 'SI', 'SINH': 'SI', 'SINH HOC': 'SI', 'SINH HỌC': 'SI',
+            'SU': 'SU', 'SỬ': 'SU', 'SU': 'SU', 'LICH SU': 'SU', 'LỊCH SỬ': 'SU',
+            'DI': 'DI', 'DIA': 'DI', 'ĐỊA': 'DI', 'DIA LY': 'DI', 'ĐỊA LÝ': 'DI',
+            'GD': 'GD', 'GDCD': 'GD'
+        };
+
+        function normalizeSubjectCode(code) {
+            if (!code) return '';
+            const raw = String(code).trim();
+            const upper = raw.toUpperCase();
+            return subjectCodeMap[upper] || upper;
+        }
+
+        // Khi thay đổi ngành
+        async function onMajorChange() {
+            const majorCode = document.getElementById('major-select').value;
+            const selectedOption = document.getElementById('major-select').options[document.getElementById('major-select').selectedIndex];
+            
+            if (!majorCode) return;
+            
+            const majorName = selectedOption.textContent.split(' - ')[1] || majorCode;
+            const diemSan = parseFloat(selectedOption.getAttribute('data-diemsan')) || 0;
+            const diemTrungTuyen = parseFloat(selectedOption.getAttribute('data-diemtrungtuyen')) || 0;
+            currentTohopGoc = selectedOption.getAttribute('data-tohopgoc') || '';
+            
+            console.log('Selected major:', majorCode, majorName, 'DiemSan:', diemSan, 'DiemTT:', diemTrungTuyen);
+            
+            document.getElementById('res-major-title').innerText = `Ngành: ${majorName} (Dự kiến)`;
+            
+            const floorContainer = document.getElementById('res-major-floor-container');
+            if (diemSan > 0) {
+                document.getElementById('res-major-floor').innerText = diemSan.toFixed(2);
+                floorContainer.classList.remove('hidden');
+            } else {
+                floorContainer.classList.add('hidden');
+            }
+            
+            // Tải tổ hợp của ngành này
+            try {
+                const comboRes = await fetch(`/api/combinations/${majorCode}`);
+                currentCombinations = await comboRes.json();
+                console.log('Loaded combinations:', currentCombinations.length);
+            } catch (error) {
+                console.error("Lỗi tải tổ hợp:", error);
+            }
+        }
+
+        // Placeholder functions (không cần thiết cho VSAT vì không có dynamic subject inputs)
+        function updateView() {
+            validateAllFields(false);
+        }
+
+        function isVsatSubjectInput(input) {
+            if (!input || !input.id) return false;
+            if (input.id === 'm-diemcong') return false;
+            const method = document.querySelector('input[name="method"]:checked')?.value || 'vsat';
+            return method === 'vsat';
+        }
+
+        function handleNumericInput(input) {
+            const raw = input.value;
+            if (!raw) {
+                updateView();
+                return;
+            }
+
+            const vsatIntegerOnly = isVsatSubjectInput(input);
+            let sanitized = vsatIntegerOnly
+                ? raw.replace(/[^0-9]/g, '')
+                : raw.replace(/[^0-9.]/g, '');
+            const parts = sanitized.split('.');
+            if (!vsatIntegerOnly) {
+                if (parts.length > 2) {
+                    sanitized = `${parts[0]}.${parts.slice(1).join('')}`;
+                }
+
+                if (sanitized.includes('.')) {
+                    const [intPart, decPart = ''] = sanitized.split('.');
+                    sanitized = `${intPart}.${decPart.slice(0, 2)}`;
+                }
+            }
+
+            if (sanitized !== raw) {
+                input.value = sanitized;
+            }
+
+            updateView();
+        }
+
+        function updateCalculations() {
+            // Do nothing - tính toán chỉ khi nhấn nút "Tính điểm"
+        }
+
+        // Cập nhật UI khi chuyển phương thức (chỉ gọi khi thay đổi radio button)
+        function updateScoreInputs(method) {
+            const inputs = [
+                { id: 'm-toan', label: 'Toán học' },
+                { id: 'm-ly', label: 'Vật lý' },
+                { id: 'm-hoa', label: 'Hóa học' },
+                { id: 'm-sinh', label: 'Sinh học' },
+                { id: 'm-van', label: 'Ngữ văn' },
+                { id: 'm-su', label: 'Lịch sử' },
+                { id: 'm-dia', label: 'Địa lý' },
+                { id: 'm-anh', label: 'Tiếng Anh' }
+            ];
+
+            inputs.forEach(inp => {
+                const input = document.getElementById(inp.id);
+                const span = input?.parentElement?.querySelector('.absolute');
+                
+                if (input && span) {
+                    if (method === 'vsat') {
+                        input.max = '150';
+                        input.step = '1';
+                        input.placeholder = '0';
+                        span.textContent = '/ 150';
+                    } else { // thpt
+                        input.max = '10';
+                        input.step = '0.25';
+                        input.placeholder = '0.00';
+                        span.textContent = '/ 10';
+                    }
+                    // Clear value khi chuyển phương thức
+                    input.value = '';
+                    clearFieldError(input);
+                }
+            });
+
+            // Cập nhật title
+            const methodText = method === 'vsat' ? 'V-SAT' : 'THPT';
+            console.log(`Switched to ${methodText} mode`);
+        }
+
+        function clearFieldError(input) {
+            const errEl = document.getElementById(`err-${input.id}`);
+            if (!errEl) return;
+            errEl.textContent = '';
+            errEl.classList.add('hidden');
+            input.classList.remove('border-red-500', 'ring-1', 'ring-red-300');
+        }
+
+        function setFieldError(input, message) {
+            const errEl = document.getElementById(`err-${input.id}`);
+            if (!errEl) return;
+            errEl.textContent = message;
+            errEl.classList.remove('hidden');
+            input.classList.add('border-red-500', 'ring-1', 'ring-red-300');
+        }
+
+        function getFieldMax(inputId, method) {
+            if (inputId === 'm-diemcong') {
+                return 3;
+            }
+            return method === 'thpt' ? 10 : 150;
+        }
+
+        function validateField(input, method) {
+            const value = input.value.trim();
+            if (value === '') {
+                clearFieldError(input);
+                return true;
+            }
+
+            if (method === 'vsat' && input.id !== 'm-diemcong') {
+                const integerOk = /^\d+$/.test(value);
+                if (!integerOk) {
+                    setFieldError(input, 'Vui lòng nhập số nguyên.');
+                    return false;
+                }
+            } else {
+                const decimalOk = /^\d+(\.\d{1,2})?$/.test(value);
+                if (!decimalOk) {
+                    setFieldError(input, 'Vui lòng nhập số với tối đa 2 chữ số thập phân.');
+                    return false;
+                }
+            }
+
+            const num = Number(value);
+            const max = getFieldMax(input.id, method);
+            if (!Number.isFinite(num) || num < 0 || num > max) {
+                setFieldError(input, `Điểm phải trong khoảng 0 - ${max}.`);
+                return false;
+            }
+
+            clearFieldError(input);
+            return true;
+        }
+
+        function validateAllFields(focusFirst) {
+            const method = document.querySelector('input[name="method"]:checked')?.value || 'vsat';
+            const ids = ['m-toan', 'm-ly', 'm-hoa', 'm-sinh', 'm-van', 'm-su', 'm-dia', 'm-anh', 'm-diemcong'];
+            let firstInvalid = null;
+            let allOk = true;
+
+            ids.forEach(id => {
+                const input = document.getElementById(id);
+                if (!input) return;
+                const ok = validateField(input, method);
+                if (!ok && !firstInvalid) {
+                    firstInvalid = input;
+                }
+                allOk = allOk && ok;
+            });
+
+            if (!allOk && focusFirst && firstInvalid) {
+                firstInvalid.focus();
+            }
+
+            return allOk;
+        }
+
+        // Nội suy điểm (Score Interpolation)
+        function interpolateScore(score, subjectCode) {
+            const normalizedCode = normalizeSubjectCode(subjectCode);
+            const rules = vsatConversionRules
+                .filter(r => r.mon === normalizedCode)
+                .sort((a, b) => a.diemA - b.diemA);
+
+            if (rules.length === 0) {
+                console.warn(`No conversion rules for subject: ${normalizedCode}`);
+                return 0;
+            }
+
+            const isWithin = (x, a, b) => x >= Math.min(a, b) && x <= Math.max(a, b);
+            const matchedRule = rules.find(rule => isWithin(score, rule.diemA, rule.diemB));
+
+            if (!matchedRule) {
+                console.warn(`Score out of conversion range: ${normalizedCode}=${score}`);
+                return 0;
+            }
+
+            const a = parseFloat(matchedRule.diemA);
+            const b = parseFloat(matchedRule.diemB);
+            const c = parseFloat(matchedRule.diemC);
+            const d = parseFloat(matchedRule.diemD);
+            const denom = b - a;
+
+            if (!denom) {
+                return parseFloat(c.toFixed(3));
+            }
+
+            const result = c + ((score - a) / denom) * (d - c);
+            return parseFloat(result.toFixed(3));
+        }
+
+        // ========================================
+        // HÀM TÍNH ĐIỂM VSAT
+        // ========================================
+        function calculateVSAT(combo, input1, input2, input3, totalBonus) {
+            const s1_raw = parseFloat(input1.value) || 0;
+            const s2_raw = parseFloat(input2.value) || 0;
+            const s3_raw = parseFloat(input3.value) || 0;
+
+            // Bước 1: Quy đổi điểm sang hệ 10 theo công thức nội suy
+            const s1_converted = interpolateScore(s1_raw, combo.mon1);
+            const s2_converted = interpolateScore(s2_raw, combo.mon2);
+            const s3_converted = interpolateScore(s3_raw, combo.mon3);
+            
+            console.log(`VSAT - Combo ${combo.matohop}:`, {
+                raw: [s1_raw, s2_raw, s3_raw],
+                converted: [s1_converted, s2_converted, s3_converted],
+                hs: [combo.hsmon1, combo.hsmon2, combo.hsmon3]
+            });
+            
+            // Bước 2: Tính điểm tổ hợp = (m1*hs1 + m2*hs2 + m3*hs3) / (hs1+hs2+hs3) * 3
+            const sumConverted = (s1_converted * combo.hsmon1) + (s2_converted * combo.hsmon2) + (s3_converted * combo.hsmon3);
+            const sumHS = combo.hsmon1 + combo.hsmon2 + combo.hsmon3;
+            const dthxt = (sumConverted / sumHS) * 3;
+            
+            console.log(`VSAT Formula: (${s1_converted.toFixed(2)}*${combo.hsmon1} + ${s2_converted.toFixed(2)}*${combo.hsmon2} + ${s3_converted.toFixed(2)}*${combo.hsmon3}) / ${sumHS} * 3 = ${dthxt.toFixed(3)}`);
+            
+            // Bước 3: Điểm xét tuyển = dthxt + totalP - dolech
+            const dolech = combo.dolech ? parseFloat(combo.dolech) : 0;
+            const finalRaw = dthxt + totalBonus - dolech;
+            const final = Math.min(finalRaw, 30);
+
+            return {
+                raw: { s1_raw, s2_raw, s3_raw },
+                converted: { s1_converted, s2_converted, s3_converted },
+                dthxt: dthxt,
+                dolech: dolech,
+                finalRaw: finalRaw,
+                final: final
+            };
+        }
+
+        // ========================================
+        // HÀM TÍNH ĐIỂM THPT
+        // ========================================
+        function calculateTHPT(combo, input1, input2, input3, totalBonus) {
+            const s1_raw = parseFloat(input1.value) || 0;
+            const s2_raw = parseFloat(input2.value) || 0;
+            const s3_raw = parseFloat(input3.value) || 0;
+
+            // Điểm đã ở hệ 10, không cần quy đổi
+            const s1_converted = s1_raw;
+            const s2_converted = s2_raw;
+            const s3_converted = s3_raw;
+            
+            console.log(`THPT - Combo ${combo.matohop}:`, {
+                scores: [s1_raw, s2_raw, s3_raw],
+                hs: [combo.hsmon1, combo.hsmon2, combo.hsmon3]
+            });
+            
+            // Tính điểm tổ hợp = (m1*hs1 + m2*hs2 + m3*hs3) / (hs1+hs2+hs3) * 3
+            const sumScores = (s1_raw * combo.hsmon1) + (s2_raw * combo.hsmon2) + (s3_raw * combo.hsmon3);
+            const sumHS = combo.hsmon1 + combo.hsmon2 + combo.hsmon3;
+            const dthxt = (sumScores / sumHS) * 3;
+            
+            console.log(`THPT Formula: (${s1_raw}*${combo.hsmon1} + ${s2_raw}*${combo.hsmon2} + ${s3_raw}*${combo.hsmon3}) / ${sumHS} * 3 = ${dthxt.toFixed(3)}`);
+            
+            // Điểm xét tuyển = dthxt + totalP - dolech
+            const dolech = combo.dolech ? parseFloat(combo.dolech) : 0;
+            const finalRaw = dthxt + totalBonus - dolech;
+            const final = Math.min(finalRaw, 30);
+
+            return {
+                raw: { s1_raw, s2_raw, s3_raw },
+                converted: { s1_converted, s2_converted, s3_converted },
+                dthxt: dthxt,
+                dolech: dolech,
+                finalRaw: finalRaw,
+                final: final
+            };
+        }
+
+        // ========================================
+        // HÀM TÍNH ĐIỂM CHÍNH - ĐIỀU PHỐI
+        // ========================================
+        function calculateFinal() {
+            const majorCode = document.getElementById('major-select').value;
+            if (!majorCode) {
+                alert('Vui lòng chọn ngành xét tuyển!');
+                return;
+            }
+
+            if (!validateAllFields(true)) {
+                return;
+            }
+
+            if (!currentCombinations || currentCombinations.length === 0) {
+                alert('Chưa tải được thông tin tổ hợp môn cho ngành này!');
+                return;
+            }
+
+            // Xác định phương thức từ radio button
+            const method = document.querySelector('input[name="method"]:checked').value;
+            console.log('=== CALCULATE FINAL ===');
+            console.log('Method:', method);
+            console.log('Current combinations:', currentCombinations);
+
+            const pObj = parseFloat(document.getElementById('priority-obj').value) || 0;
+            const pArea = parseFloat(document.getElementById('priority-area').value) || 0;
+            const diemCong = parseFloat(document.getElementById('m-diemcong').value) || 0;
+            const totalP = pObj + pArea;
+            const totalBonusRaw = totalP + diemCong;
+            const totalBonus = Math.min(totalBonusRaw, 3);
+
+            // Map từ mã môn sang ID input
+            const subjectInputMap = {
+                'TO': 'm-toan', 'Toán': 'm-toan', 'Toan': 'm-toan',
+                'VA': 'm-van', 'Văn': 'm-van', 'Van': 'm-van',
+                'AN': 'm-anh', 'Anh': 'm-anh',
+                'LI': 'm-ly', 'Lý': 'm-ly', 'Ly': 'm-ly',
+                'HO': 'm-hoa', 'Hóa': 'm-hoa', 'Hoa': 'm-hoa',
+                'SI': 'm-sinh', 'Sinh': 'm-sinh',
+                'SU': 'm-su', 'Sử': 'm-su', 'Su': 'm-su',
+                'DI': 'm-dia', 'Địa': 'm-dia', 'Dia': 'm-dia'
+            };
+
+            const comboContainer = document.getElementById('combination-results');
+            comboContainer.innerHTML = '';
+            document.getElementById('results-empty-state')?.remove();
+
+            currentCombinations.forEach(combo => {
+                console.log('Processing combo:', combo.matohop, 'Subjects:', combo.mon1, combo.mon2, combo.mon3);
+                
+                // Lấy input fields
+                const inputId1 = subjectInputMap[combo.mon1] || subjectInputMap[combo.mon1?.toUpperCase()] || `m-${combo.mon1?.toLowerCase()}`;
+                const inputId2 = subjectInputMap[combo.mon2] || subjectInputMap[combo.mon2?.toUpperCase()] || `m-${combo.mon2?.toLowerCase()}`;
+                const inputId3 = subjectInputMap[combo.mon3] || subjectInputMap[combo.mon3?.toUpperCase()] || `m-${combo.mon3?.toLowerCase()}`;
+
+                const input1 = document.getElementById(inputId1);
+                const input2 = document.getElementById(inputId2);
+                const input3 = document.getElementById(inputId3);
+
+                if (!input1 || !input2 || !input3) {
+                    console.warn(`Missing input for combo ${combo.matohop}`);
+                    return;
+                }
+
+                // ===== ĐIỀU PHỐI: Gọi hàm tính điểm tương ứng =====
+                let result;
+                if (method === 'vsat') {
+                    result = calculateVSAT(combo, input1, input2, input3, totalBonus);
+                } else {
+                    result = calculateTHPT(combo, input1, input2, input3, totalBonus);
+                }
+
+                console.log(`Final score: ${result.dthxt.toFixed(2)} + ${totalBonus} - ${result.dolech} = ${result.final.toFixed(2)}`);
+
+                // Tạo card hiển thị kết quả
+                const card = document.createElement('div');
+                card.className = `bg-white/5 border border-white/10 rounded-lg p-4 flex flex-col gap-1 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-white/10 hover:scale-[1.02] hover:border-white/30 animate-in slide-in-from-bottom-2 fade-in duration-500`;
+                card.onclick = () => showDetails(combo, result.raw, result.converted, result.dthxt, totalP, result.dolech, result.final, method, pObj, pArea, diemCong, totalBonusRaw, totalBonus, result.finalRaw);
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs text-blue-200/60 font-semibold uppercase">Tổ hợp ${combo.matohop}</span>
+                        <span class="material-symbols-outlined text-xs opacity-40">info</span>
+                    </div>
+                    <div class="text-3xl font-bold">${result.final.toFixed(3)}</div>
+                    <span class="text-[10px] text-blue-200/40 mt-1">${combo.mon1}, ${combo.mon2}, ${combo.mon3}</span>
+                `;
+                comboContainer.appendChild(card);
+            });
+
+            document.getElementById('res-priority').innerText = totalP > 0 ? `+${totalP}` : '0';
+            document.getElementById('hint-text').style.display = 'block';
+            const status = document.getElementById('calc-status');
+            status.innerText = 'Đã cập nhật';
+            status.className = 'bg-green-500 text-white px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-lg';
+
+            const resultsSection = document.getElementById('combination-results');
+            if (resultsSection) {
+                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                resultsSection.focus({ preventScroll: true });
+            }
+        }
+
+        function showDetails(combo, raw, converted, dthxt, totalP, dolech, final, method, pObj, pArea, diemCong, totalBonusRaw, totalBonus, finalRaw) {
+            const modal = document.getElementById('calc-modal');
+            const content = document.getElementById('modal-content');
+            
+            const rows = [
+                {code: normalizeSubjectCode(combo.mon1), raw: raw.s1_raw, converted: converted.s1_converted, hs: combo.hsmon1},
+                {code: normalizeSubjectCode(combo.mon2), raw: raw.s2_raw, converted: converted.s2_converted, hs: combo.hsmon2},
+                {code: normalizeSubjectCode(combo.mon3), raw: raw.s3_raw, converted: converted.s3_converted, hs: combo.hsmon3}
+            ];
+
+            const methodText = method === 'vsat' ? 'V-SAT' : 'THPT';
+            
+            let contentHtml;
+            
+            if (method === 'vsat') {
+                const format3 = value => Number.isFinite(value) ? Number(value).toFixed(3) : '0.000';
+                const subjectLabel = code => subjectNames[code] || code || 'N/A';
+
+                // ===== VSAT: Hiển thị đầy đủ công thức quy đổi =====
+                const subjectRows = rows.map(r => {
+                    // Tìm rule quy đổi để hiển thị công thức
+                    const rules = vsatConversionRules
+                        .filter(rule => rule.mon === r.code)
+                        .sort((a, b) => a.diemA - b.diemA);
+                    
+                    let formulaText = '';
+                    if (rules.length > 0) {
+                        // Tìm rule phù hợp
+                        let matchedRule = null;
+                        for (let rule of rules) {
+                            const min = Math.min(rule.diemA, rule.diemB);
+                            const max = Math.max(rule.diemA, rule.diemB);
+                            if (r.raw >= min && r.raw <= max) {
+                                matchedRule = rule;
+                                break;
+                            }
+                        }
+                        
+                        if (matchedRule) {
+                            const a = matchedRule.diemA;
+                            const b = matchedRule.diemB;
+                            const c = matchedRule.diemC;
+                            const d = matchedRule.diemD;
+                            formulaText = `${format3(c)} + ( ${format3(r.raw)} - ${format3(a)} ) / ( ${format3(b)} - ${format3(a)} ) * ( ${format3(d)} - ${format3(c)} ) = ${format3(r.converted)}`;
+                        } else {
+                            formulaText = `Lỗi, điểm nhập vào không nằm trong phân vị nào = 0`;
+                        }
+                    } else {
+                        formulaText = `Không có bảng quy đổi cho môn ${r.code}`;
+                    }
+                    
+                    return `
+                        <tr class="border-b border-gray-100">
+                            <td class="py-3 px-4 text-sm font-medium text-gray-700 bg-gray-50">Điểm môn ${r.code} (${subjectLabel(r.code)}): ${r.raw}</td>
+                            <td class="py-3 px-4 text-sm font-mono text-gray-800">
+                                <div class="bg-blue-50 p-2 rounded border border-blue-200">
+                                    ${formulaText}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                // Tính xét ngưỡng
+                const sumConverted = rows.reduce((sum, r) => sum + r.converted, 0);
+                const xetNguong = sumConverted + totalP;
+
+                // Công thức điểm tổ hợp
+                const dthxtFormula = `( ${rows.map(r => `${format3(r.converted)} * ${r.hs}`).join(' + ')} ) / ${combo.hsmon1 + combo.hsmon2 + combo.hsmon3} * 3 = ${format3(dthxt)}`;
+
+                const tohopGocLabel = currentTohopGoc || '—';
+                const totalBonusText = format3(totalBonus || 0);
+                const pObjText = format3(pObj || 0);
+                const pAreaText = format3(pArea || 0);
+                const diemCongText = format3(diemCong || 0);
+                const totalPText = format3(totalP || 0);
+                const dolechText = format3(dolech || 0);
+                const finalText = format3(final || 0);
+                const bonusCappedNote = (totalBonusRaw || 0) > 3
+                    ? `<div class="mt-1 text-xs text-amber-700">Tổng ưu tiên + cộng vượt 3, lấy 3.000.</div>`
+                    : '';
+                const finalCappedNote = (finalRaw || 0) > 30
+                    ? `<div class="mt-1 text-xs text-amber-700">Max điểm 30.</div>`
+                    : '';
+
+                contentHtml = `
+                    <div class="space-y-4">
+                        <div class="bg-blue-100 p-3 rounded text-sm font-bold text-blue-900 border-l-4 border-blue-500">
+                            Tổ hợp: ${combo.matohop} - Chi tiết tính điểm V-SAT
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg overflow-hidden">
+                            <table class="w-full text-left border-collapse">
+                                <tbody class="divide-y divide-gray-100">
+                                    ${subjectRows}
+                                    
+                                    <tr class="border-b border-gray-100 bg-yellow-50">
+                                        <td class="py-3 px-4 text-sm font-medium text-gray-700">Xét ngưỡng = Tổng điểm 3 môn + điểm ưu tiên</td>
+                                        <td class="py-3 px-4 text-sm font-mono text-gray-800">
+                                            <div class="bg-white p-2 rounded border border-yellow-300">
+                                                ( ${rows.map(r => format3(r.converted)).join(' + ')} + ${pObjText} + ${pAreaText} ) = <span class="font-bold">${format3(xetNguong)}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr class="border-b border-gray-100 bg-green-50">
+                                        <td class="py-3 px-4 text-sm font-medium text-gray-700">Điểm tổ hợp xét tuyển (ĐTHXT) = ( ${rows.map(r => `${r.code} * ${r.hs}`).join(' + ')} ) / ${combo.hsmon1 + combo.hsmon2 + combo.hsmon3} * 3</td>
+                                        <td class="py-3 px-4 text-sm font-mono text-gray-800">
+                                            <div class="bg-white p-2 rounded border border-green-300">
+                                                ${dthxtFormula}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr class="border-b border-gray-100">
+                                        <td class="py-3 px-4 text-sm font-medium text-gray-700">Độ lệch với TH gốc (${tohopGocLabel})</td>
+                                        <td class="py-3 px-4 text-sm font-mono text-gray-800">
+                                            <span class="text-gray-700 font-bold">${dolechText}</span>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr class="border-b border-gray-100">
+                                        <td class="py-3 px-4 text-sm font-medium text-gray-700">Điểm cộng (ĐC)</td>
+                                        <td class="py-3 px-4 text-sm font-bold text-green-600">${diemCongText}</td>
+                                    </tr>
+                                    
+                                    <tr class="border-b border-gray-100">
+                                        <td class="py-3 px-4 text-sm font-medium text-gray-700">Điểm ưu tiên (ĐUT)</td>
+                                        <td class="py-3 px-4 text-sm font-bold text-green-600">${totalPText}</td>
+                                    </tr>
+                                    
+                                    <tr class="bg-red-50">
+                                        <td class="py-3 px-4 text-sm font-medium text-gray-700">Điểm xét tuyển (ĐXT) = ĐTHXT + ĐC + ĐUT - Độ lệch (c=30)</td>
+                                        <td class="py-3 px-4 text-sm font-mono text-gray-800">
+                                            <div class="bg-white p-2 rounded border border-red-300">
+                                                ${format3(dthxt)} + ${diemCongText} + ${totalPText} - ${dolechText} = <span class="font-bold text-base">${finalText}</span>
+                                                ${bonusCappedNote}
+                                                ${finalCappedNote}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // ===== THPT: Hiển thị đơn giản =====
+                const subjectRows = rows.map(r => `
+                    <tr class="border-b border-gray-200">
+                        <td class="py-4 px-6 bg-gray-50/50 text-sm font-medium text-gray-700 w-1/3">Điểm môn ${r.code}</td>
+                        <td class="py-4 px-6 text-sm font-mono text-gray-800">
+                            <div class="space-y-1">
+                                <div><span class="text-gray-600">Điểm (thang 10):</span> <strong>${r.raw.toFixed(2)}</strong></div>
+                                <div class="text-gray-500 text-xs">Hệ số: ${r.hs}</div>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+
+                const calculationFormula = `((${rows.map(r => `${r.raw.toFixed(2)}*${r.hs}`).join(' + ')}) / ${combo.hsmon1+combo.hsmon2+combo.hsmon3}) * 3`;
+
+                contentHtml = `
+                    <div class="space-y-6">
+                        <div class="bg-slate-100 p-3 rounded text-sm font-bold text-[#001e2f] border-l-4 border-blue-500">
+                            Tổ hợp: ${combo.matohop} - Chi tiết tính điểm THPT
+                        </div>
+                        <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                            <table class="w-full text-left border-collapse">
+                                <tbody class="divide-y divide-gray-200">
+                                    ${subjectRows}
+                                    <tr class="border-b border-gray-200 bg-blue-50">
+                                        <td class="py-4 px-6 bg-gray-50/50 text-sm font-medium text-gray-700">Điểm tổ hợp (ĐTHXT)</td>
+                                        <td class="py-4 px-6 text-sm font-mono text-gray-800">
+                                            <div class="space-y-1">
+                                                <div class="text-xs text-gray-600">Công thức:</div>
+                                                <div class="bg-white p-2 rounded border">${calculationFormula}</div>
+                                                <div class="text-lg font-bold text-blue-600">= ${dthxt.toFixed(3)}</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="py-4 px-6 bg-gray-50/50 text-sm font-medium text-gray-700">Điểm ưu tiên (ĐUT)</td>
+                                        <td class="py-4 px-6 text-sm font-bold text-green-600">+${totalP.toFixed(2)}</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="py-4 px-6 bg-gray-50/50 text-sm font-medium text-gray-700">Độ lệch (nếu có)</td>
+                                        <td class="py-4 px-6 text-sm text-red-500 font-bold">-${dolech.toFixed(2)}</td>
+                                    </tr>
+                                    <tr class="bg-[#001e2f]">
+                                        <td class="py-4 px-6 text-sm font-bold text-white">Điểm xét tuyển cuối cùng</td>
+                                        <td class="py-4 px-6 text-sm font-mono text-white">
+                                            <div class="space-y-1">
+                                                <div class="text-xs opacity-80">${dthxt.toFixed(2)} + ${totalP.toFixed(2)} - ${dolech.toFixed(2)}</div>
+                                                <div class="text-2xl font-bold">= ${final.toFixed(2)}</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+
+            content.innerHTML = contentHtml;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('calc-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function resetForm() {
+            location.reload();
+        }
+        /*]]>*/
+    </script>
+
+
+    <footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

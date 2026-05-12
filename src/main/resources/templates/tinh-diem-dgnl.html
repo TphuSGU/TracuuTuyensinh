@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Tính điểm xét tuyển ĐGNL - Cổng Tuyển Sinh')}"></head>
+
+<body class="bg-background text-on-background font-body-md pt-16">
+    <!-- TopNavBar -->
+    <nav th:replace="~{fragments :: header('dgnl')}"></nav>
+
+    <!-- Main Content Canvas -->
+    <main class="max-w-container-max mx-auto px-gutter py-stack-lg min-h-screen">
+        <header class="mb-stack-lg">
+            <h1 class="font-h1 text-h1 text-primary mb-unit">Tính điểm Đánh giá năng lực</h1>
+            <p class="font-body-lg text-body-lg text-on-surface-variant">Quy đổi điểm thi ĐGNL (ĐHQG HCM/HN) về thang
+                điểm 30 và kiểm tra điều kiện xét tuyển.</p>
+            
+         
+        </header>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-lg">
+            <!-- Calculator Input Form -->
+            <section
+                class="lg:col-span-7 bg-surface-container-lowest border border-outline-variant rounded-xl p-gutter shadow-[0px_4px_20px_rgba(0,0,0,0.02)]">
+                <div class="flex items-center gap-stack-sm mb-stack-md pb-stack-sm border-b border-surface-variant">
+                    <span class="material-symbols-outlined text-primary"
+                        style="font-variation-settings: 'FILL' 1;">calculate</span>
+                    <h2 class="font-h2 text-h2 text-primary">Thông tin xét tuyển</h2>
+                </div>
+                <form class="space-y-stack-md">
+                    <!-- Score Input -->
+                    <div>
+                        <label class="block font-label-sm text-label-sm text-on-surface mb-unit" for="dgnl-score">Điểm
+                            thi ĐGNL (Thang 1200)</label>
+                        <div class="relative flex items-center">
+                            <input
+                                class="w-full bg-surface-bright border border-outline-variant rounded px-4 py-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none"
+                                id="dgnl-score" max="1200" min="0" placeholder="Nhập điểm của bạn..." type="number" />
+                            <span
+                                class="absolute right-4 text-on-surface-variant font-label-sm text-label-sm">Điểm</span>
+                        </div>
+                        <p class="text-[12px] text-secondary mt-unit">Vui lòng nhập điểm chính xác theo giấy báo điểm.
+                        </p>
+                    </div>
+                    <!-- Major Dropdown -->
+                    <div>
+                        <label class="block font-label-sm text-label-sm text-on-surface mb-unit"
+                            for="major-select">Ngành xét tuyển</label>
+                        <select
+                            class="w-full bg-surface-bright border border-outline-variant rounded px-4 py-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none appearance-none"
+                            id="major-select">
+                            <option disabled selected value="">Chọn ngành nguyện vọng...</option>
+                            <option th:each="nganh : ${danhSachNganh}" 
+                                    th:value="${nganh.manganh}" 
+                                    th:text="${nganh.manganh + ' - ' + nganh.tennganh}"
+                                    th:attr="data-diemsan=${nganh.diemSan}, data-diemtrungtuyen=${nganh.diemTrungTuyen}, data-tohopgoc=${nganh.tohopGoc}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+                        <!-- Priority Object -->
+                        <div>
+                            <label class="block font-label-sm text-label-sm text-on-surface mb-unit"
+                                for="priority-object">Đối tượng ưu tiên</label>
+                            <select
+                                class="w-full bg-surface-bright border border-outline-variant rounded px-4 py-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none appearance-none"
+                                id="priority-object">
+                                <option selected value="0">Không có (0 điểm)</option>
+                                <optgroup label="Nhóm UT1 - Thương binh, con liệt sĩ, dân tộc thiểu số KV1 (+2.00 điểm)">
+                                    <option value="2">ĐT 01 - Thương binh, con liệt sĩ (+2.00 đ)</option>
+                                    <option value="2">ĐT 02 - Con thương binh suy giảm ≥81% (+2.00 đ)</option>
+                                    <option value="2">ĐT 03 - Dân tộc thiểu số ở KV1 (+2.00 đ)</option>
+                                    <option value="2">ĐT 04 - Con của người hoạt động cách mạng (+2.00 đ)</option>
+                                </optgroup>
+                                <optgroup label="Nhóm UT2 - Dân tộc thiểu số, giáo viên vùng khó khăn (+1.00 điểm)">
+                                    <option value="1">ĐT 05 - Dân tộc thiểu số ngoài KV1 (+1.00 đ)</option>
+                                    <option value="1">ĐT 06 - Con thương binh suy giảm &lt;81% (+1.00 đ)</option>
+                                    <option value="1">ĐT 07 - Giáo viên có 3 năm công tác (+1.00 đ)</option>
+                                </optgroup>
+                            </select>
+                            <p class="text-[11px] text-on-surface-variant mt-1 italic">Chọn đối tượng ưu tiên theo giấy chứng nhận</p>
+                        </div>
+                        <!-- Priority Area -->
+                        <div>
+                            <label class="block font-label-sm text-label-sm text-on-surface mb-unit"
+                                for="priority-area">Khu vực ưu tiên</label>
+                            <select
+                                class="w-full bg-surface-bright border border-outline-variant rounded px-4 py-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none appearance-none"
+                                id="priority-area">
+                                <option selected value="KV3">KV3 - Quận nội thành TP trực thuộc TW (0 điểm)</option>
+                                <option value="KV2">KV2 - Thị xã, thành phố thuộc tỉnh (+0.25 đ)</option>
+                                <option value="KV2NT">KV2-NT - Khu vực 2 nông thôn (+0.50 đ)</option>
+                                <option value="KV1">KV1 - Vùng dân tộc thiểu số, miền núi, hải đảo (+0.75 đ)</option>
+                            </select>
+                            <p class="text-[11px] text-on-surface-variant mt-1 italic">Khu vực theo nơi học THPT</p>
+                        </div>
+                    </div>
+                    <!-- Bonus Score -->
+                    <div>
+                        <label class="block font-label-sm text-label-sm text-on-surface mb-unit" for="bonus-score">Điểm khuyến khích (nếu có)</label>
+                        <div class="relative flex items-center">
+                            <input
+                                class="w-full bg-surface-bright border border-outline-variant rounded px-4 py-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none"
+                                id="bonus-score" max="3" min="0" step="0.25" placeholder="0.00" type="number" value="0" />
+                            <span class="absolute right-4 text-on-surface-variant font-label-sm text-label-sm">Điểm</span>
+                        </div>
+                        <p class="text-[11px] text-on-surface-variant mt-1 italic">
+                            Điểm cộng cho học sinh giỏi, chứng chỉ ngoại ngữ (IELTS, TOEFL), giải khoa học kỹ thuật. 
+                            <span class="font-semibold text-warning">Tổng điểm ưu tiên + khuyến khích tối đa 3.0 điểm.</span>
+                        </p>
+                    </div>
+                    <div class="pt-stack-sm">
+                        <button
+                            class="w-full bg-primary hover:bg-primary-container text-on-primary font-label-sm text-label-sm py-4 rounded-lg transition-colors flex justify-center items-center gap-2"
+                            type="button" onclick="calculateDGNL()">
+                            <span class="material-symbols-outlined">functions</span>
+                            Tính Điểm Ngay
+                        </button>
+                    </div>
+                </form>
+            </section>
+            <!-- Results Panel -->
+            <section class="lg:col-span-5 flex flex-col gap-stack-md">
+                <!-- Converted Score Card -->
+                <div class="bg-primary-fixed border border-primary-fixed-dim rounded-xl p-gutter shadow-[0px_4px_20px_rgba(0,0,0,0.05)] relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-white opacity-20 rounded-full blur-2xl"></div>
+                    <h3 class="font-h3 text-h3 text-on-primary-fixed mb-unit relative z-10">Điểm Quy Đổi Thang 30</h3>
+                    <p class="font-body-md text-body-md text-on-primary-fixed-variant mb-stack-md relative z-10">Đã bao gồm điểm ưu tiên đối tượng và khu vực.</p>
+                    <div class="flex items-end gap-2 relative z-10">
+                        <span class="text-[56px] leading-none font-bold text-primary tracking-tight" id="result-score">--</span>
+                        <span class="font-h3 text-h3 text-primary-container pb-2">/ 30</span>
+                    </div>
+                    <div class="mt-stack-md pt-stack-md border-t border-primary-fixed-dim/50 grid grid-cols-2 gap-4 relative z-10">
+                        <div>
+                            <span class="block font-label-sm text-label-sm text-on-primary-fixed-variant mb-unit">Quy đổi gốc</span>
+                            <span class="font-body-lg text-body-lg font-semibold text-primary" id="base-score">--</span>
+                        </div>
+                        <div>
+                            <span class="block font-label-sm text-label-sm text-on-primary-fixed-variant mb-unit">Tổng ưu tiên</span>
+                            <span class="font-body-lg text-body-lg font-semibold text-primary" id="total-priority">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Breakdown Table -->
+                <div id="detail-table-container" class="hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-surface-container-high border-b border-outline-variant">
+                                    <th class="py-3 px-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Nội dung</th>
+                                    <th class="py-3 px-4 text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Chi tiết điểm</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-outline-variant/30 text-sm" id="detail-table-body">
+                                <!-- Content injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-stack-sm flex gap-2 items-start p-3 bg-secondary-fixed-dim/10 rounded-lg border border-outline-variant">
+                        <span class="material-symbols-outlined text-secondary text-sm">info</span>
+                        <p class="text-[10px] text-on-surface-variant italic leading-relaxed">
+                            Công thức quy đổi dựa trên bảng phân vị điểm ĐGNL năm 2024. Kết quả chỉ mang tính chất tham khảo cho kỳ tuyển sinh 2025.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // Lấy dữ liệu từ Thymeleaf
+        const dgnlConversionRules = /*[[${bangQuyDoiDGNL}]]*/ [];
+        
+        // Debug: Xem cấu trúc dữ liệu
+        console.log('=== DEBUG DGNL Conversion Rules ===');
+        console.log('Total rules:', dgnlConversionRules.length);
+        if (dgnlConversionRules.length > 0) {
+            console.log('First rule:', dgnlConversionRules[0]);
+            console.log('Keys:', Object.keys(dgnlConversionRules[0]));
+        }
+
+        function calculateDGNL() {
+            const scoreInput = document.getElementById('dgnl-score');
+            const score = parseFloat(scoreInput.value);
+            
+            if (isNaN(score) || score < 0 || score > 1200) {
+                alert('Vui lòng nhập điểm ĐGNL hợp lệ (0 - 1200)!');
+                scoreInput.focus();
+                return;
+            }
+
+            const majorSelect = document.getElementById('major-select');
+            const majorCode = majorSelect.value;
+            if (!majorCode) {
+                alert('Vui lòng chọn ngành xét tuyển!');
+                return;
+            }
+
+            // Lấy thông tin ngành đã chọn
+            const selectedOption = majorSelect.options[majorSelect.selectedIndex];
+            const diemSan = parseFloat(selectedOption.getAttribute('data-diemsan')) || 0;
+            const diemTrungTuyen = parseFloat(selectedOption.getAttribute('data-diemtrungtuyen')) || 0;
+            const tohopGoc = selectedOption.getAttribute('data-tohopgoc') || '';
+            
+            console.log('=== DEBUG INFO ===');
+            console.log('Tổ hợp gốc từ ngành:', tohopGoc);
+            
+            // Lấy tổ hợp đầu tiên nếu có nhiều tổ hợp (VD: "A00, A01, D01" -> "D01")
+            const tohopArray = tohopGoc.split(',').map(t => t.trim());
+            const mainTohop = tohopArray.length > 0 ? tohopArray[tohopArray.length - 1] : 'D01'; // Ưu tiên tổ hợp cuối (thường là D01)
+            
+            console.log('Tổ hợp sử dụng:', mainTohop);
+            console.log('Điểm nhập:', score);
+
+            // --- Logic nội suy dựa trên quy tắc từ server ---
+            let base = 0;
+            let formulaHtml = "Dữ liệu quy đổi mặc định (Điểm/40)";
+
+            // Tìm quy tắc phù hợp theo tổ hợp gốc
+            const rules = dgnlConversionRules
+                .filter(r => r.phuongThuc === 'DGNL' && r.toHop === mainTohop)
+                .sort((a, b) => b.diemA - a.diemA);
+
+            console.log('Số rules tìm được:', rules.length);
+            if (rules.length > 0) {
+                console.log('Rules:', rules.slice(0, 3)); // Log 3 rules đầu
+            }
+
+            if (rules.length > 0) {
+                // Tìm rule phù hợp với điểm của thí sinh
+                let foundRule = null;
+                
+                // Sắp xếp rules theo diemA tăng dần để dễ tìm
+                const sortedRules = [...rules].sort((a, b) => a.diemA - b.diemA);
+                
+                for (let i = 0; i < sortedRules.length; i++) {
+                    const rule = sortedRules[i];
+                    console.log(`Checking rule ${i}: [${rule.diemA}, ${rule.diemB}] vs score ${score}`);
+                    
+                    // Kiểm tra xem điểm có nằm trong vùng [diemA, diemB] không
+                    if (score >= rule.diemA && score <= rule.diemB) {
+                        foundRule = rule;
+                        console.log('✓ Found matching rule:', rule);
+                        break;
+                    }
+                }
+
+                if (foundRule) {
+                    // Áp dụng công thức: y = c + ((x - a) / (b - a)) × (d - c)
+                    const a = foundRule.diemA;
+                    const b = foundRule.diemB;
+                    const c = foundRule.diemC;
+                    const d = foundRule.diemD;
+                    
+                    base = c + ((score - a) / (b - a)) * (d - c);
+                    
+                    console.log('Tính toán:', {a, b, c, d, score, result: base});
+                    
+                    // Format công thức giống hình: 22.25 + ( 890 - 889.00 ) / ( 895.00 - 889.00 ) * ( 22.25 - 22.25 )
+                    formulaHtml = `${c.toFixed(2)} + ( ${score.toFixed(2)} - ${a.toFixed(2)} ) / ( ${b.toFixed(2)} - ${a.toFixed(2)} ) * ( ${d.toFixed(2)} - ${c.toFixed(2)} )`;
+                    console.log('Formula HTML:', formulaHtml);
+                } else {
+                    // Không tìm thấy vùng phù hợp
+                    // Kiểm tra xem điểm có cao hơn hoặc thấp hơn tất cả các vùng không
+                    const maxDiemB = Math.max(...sortedRules.map(r => r.diemB));
+                    const minDiemA = Math.min(...sortedRules.map(r => r.diemA));
+                    
+                    console.log('Không tìm thấy rule. Min:', minDiemA, 'Max:', maxDiemB, 'Score:', score);
+                    
+                    if (score > maxDiemB) {
+                        // Điểm cao hơn vùng cao nhất
+                        const maxRule = sortedRules[sortedRules.length - 1];
+                        base = maxRule.diemD;
+                        formulaHtml = `Điểm tối đa: ${base.toFixed(2)} (điểm ${score} > ${maxDiemB})`;
+                        console.log('Điểm cao hơn max');
+                    } else if (score < minDiemA) {
+                        // Điểm thấp hơn vùng thấp nhất
+                        const minRule = sortedRules[0];
+                        base = minRule.diemC;
+                        formulaHtml = `Điểm tối thiểu: ${base.toFixed(2)} (điểm ${score} < ${minDiemA})`;
+                        console.log('Điểm thấp hơn min');
+                    } else {
+                        // Điểm nằm giữa các vùng (gap) - không nên xảy ra
+                        base = score / 40;
+                        formulaHtml = `${score} / 40 (Điểm nằm trong khoảng trống giữa các vùng)`;
+                        console.log('Điểm trong gap');
+                    }
+                }
+            } else {
+                base = score / 40;
+                formulaHtml = `${score} / 40 (Quy đổi mặc định - không tìm thấy bảng quy đổi cho tổ hợp ${mainTohop})`;
+                console.log('Không có rules cho tổ hợp:', mainTohop);
+            }
+
+            const priorityObj = parseFloat(document.getElementById('priority-object').value);
+            const areaMap = { 'KV3': 0, 'KV2': 0.25, 'KV2NT': 0.5, 'KV1': 0.75 };
+            const areaScore = areaMap[document.getElementById('priority-area').value] || 0;
+            const bonusScore = parseFloat(document.getElementById('bonus-score').value) || 0;
+
+            // Tổng điểm ưu tiên + khuyến khích (khu vực + đối tượng + khuyến khích)
+            let totalPriorityAndBonus = priorityObj + areaScore + bonusScore;
+            
+            // Giới hạn tổng điểm ưu tiên + khuyến khích tối đa 3 điểm
+            const maxPriority = 3.0;
+            let priorityNote = '';
+            if (totalPriorityAndBonus > maxPriority) {
+                priorityNote = ` (giới hạn ${maxPriority} điểm)`;
+                totalPriorityAndBonus = maxPriority;
+            }
+            
+            // Tính tổng điểm xét tuyển
+            let total = base + totalPriorityAndBonus;
+            
+            // Giới hạn điểm xét tuyển cuối cùng tối đa 30 điểm
+            const maxTotal = 30.0;
+            let totalNote = '';
+            if (total > maxTotal) {
+                totalNote = ` (giới hạn ${maxTotal} điểm)`;
+                total = maxTotal;
+            }
+
+            // Cập nhật thẻ điểm chính
+            document.getElementById('base-score').innerText = base.toFixed(2);
+            document.getElementById('total-priority').innerText = totalPriorityAndBonus.toFixed(2);
+            document.getElementById('result-score').innerText = total.toFixed(2);
+
+            // Kiểm tra điều kiện xét tuyển
+            let statusHtml = '';
+            let statusClass = '';
+            
+            // Kiểm tra xem điểm sàn và điểm trúng tuyển đã được công bố chưa
+            const diemSanCongBo = diemSan > 0;
+            const diemTrungTuyenCongBo = diemTrungTuyen > 0;
+            
+            if (!diemSanCongBo && !diemTrungTuyenCongBo) {
+                // Cả 2 điểm đều chưa công bố
+                statusHtml = `<span class="material-symbols-outlined text-on-surface-variant">info</span> Điểm sàn và điểm trúng tuyển chưa được công bố`;
+                statusClass = 'bg-surface-container-low text-on-surface';
+            } else if (diemTrungTuyenCongBo) {
+                // Điểm trúng tuyển đã công bố
+                if (total >= diemTrungTuyen) {
+                    statusHtml = `<span class="material-symbols-outlined text-success" style="font-variation-settings: 'FILL' 1;">check_circle</span> Đạt điểm trúng tuyển năm trước (${diemTrungTuyen.toFixed(2)})`;
+                    statusClass = 'bg-success-container/50 text-on-success-container';
+                } else if (diemSanCongBo && total >= diemSan) {
+                    statusHtml = `<span class="material-symbols-outlined text-warning" style="font-variation-settings: 'FILL' 1;">warning</span> Đạt điểm sàn (${diemSan.toFixed(2)}) nhưng chưa đạt điểm trúng tuyển (${diemTrungTuyen.toFixed(2)})`;
+                    statusClass = 'bg-yellow-100 text-yellow-800';
+                } else if (diemSanCongBo) {
+                    statusHtml = `<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">cancel</span> Chưa đạt điểm sàn (${diemSan.toFixed(2)})`;
+                    statusClass = 'bg-error-container/50 text-on-error-container';
+                } else {
+                    // Điểm sàn chưa công bố nhưng điểm trúng tuyển đã có
+                    if (total >= diemTrungTuyen) {
+                        statusHtml = `<span class="material-symbols-outlined text-success" style="font-variation-settings: 'FILL' 1;">check_circle</span> Đạt điểm trúng tuyển năm trước (${diemTrungTuyen.toFixed(2)})`;
+                        statusClass = 'bg-success-container/50 text-on-success-container';
+                    } else {
+                        statusHtml = `<span class="material-symbols-outlined text-warning" style="font-variation-settings: 'FILL' 1;">warning</span> Chưa đạt điểm trúng tuyển năm trước (${diemTrungTuyen.toFixed(2)}). Điểm sàn chưa công bố.`;
+                        statusClass = 'bg-yellow-100 text-yellow-800';
+                    }
+                }
+            } else if (diemSanCongBo) {
+                // Chỉ có điểm sàn được công bố
+                if (total >= diemSan) {
+                    statusHtml = `<span class="material-symbols-outlined text-success" style="font-variation-settings: 'FILL' 1;">check_circle</span> Đạt điểm sàn (${diemSan.toFixed(2)}). Điểm trúng tuyển chưa công bố.`;
+                    statusClass = 'bg-success-container/50 text-on-success-container';
+                } else {
+                    statusHtml = `<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">cancel</span> Chưa đạt điểm sàn (${diemSan.toFixed(2)})`;
+                    statusClass = 'bg-error-container/50 text-on-error-container';
+                }
+            }
+
+            // Cập nhật bảng chi tiết
+            const tableBody = document.getElementById('detail-table-body');
+            
+            // Tạo HTML cho điểm sàn
+            let diemSanHtml = diemSan > 0 
+                ? `<span class="font-semibold">${diemSan.toFixed(2)}</span>` 
+                : `<span class="italic text-on-surface-variant">Chưa công bố</span>`;
+            
+            // Tạo HTML cho điểm trúng tuyển
+            let diemTrungTuyenHtml = diemTrungTuyen > 0 
+                ? `<span class="font-semibold">${diemTrungTuyen.toFixed(2)}</span>` 
+                : `<span class="italic text-on-surface-variant">Chưa công bố</span>`;
+            
+            tableBody.innerHTML = `
+                <tr>
+                    <td class="py-3 px-4 text-on-surface font-medium">Điểm thi ĐGNL</td>
+                    <td class="py-3 px-4 font-mono text-on-surface-variant">${score.toFixed(0)}</td>
+                </tr>
+                <tr class="bg-surface-container-low/30">
+                    <td class="py-3 px-4 text-on-surface font-medium">Công thức quy đổi về thang 30 (THXT gốc: ${mainTohop})</td>
+                    <td class="py-3 px-4 font-mono text-[11px] text-on-surface-variant">
+                        ${formulaHtml}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="py-3 px-4 text-on-surface font-medium">Điểm thi quy đổi</td>
+                    <td class="py-3 px-4 font-bold text-primary">${base.toFixed(3)}</td>
+                </tr>
+                <tr class="bg-surface-container-low/30">
+                    <td class="py-3 px-4 text-on-surface font-medium">Điểm ưu tiên đối tượng</td>
+                    <td class="py-3 px-4 text-on-surface-variant">${priorityObj.toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td class="py-3 px-4 text-on-surface font-medium">Điểm ưu tiên khu vực</td>
+                    <td class="py-3 px-4 text-on-surface-variant">${areaScore.toFixed(2)}</td>
+                </tr>
+                <tr class="bg-surface-container-low/30">
+                    <td class="py-3 px-4 text-on-surface font-medium">Điểm khuyến khích</td>
+                    <td class="py-3 px-4 text-on-surface-variant">${bonusScore.toFixed(2)}</td>
+                </tr>
+                <tr class="bg-yellow-50">
+                    <td class="py-3 px-4 text-on-surface font-medium">Tổng điểm ưu tiên + khuyến khích${priorityNote}</td>
+                    <td class="py-3 px-4 text-on-surface-variant font-semibold">${totalPriorityAndBonus.toFixed(2)}</td>
+                </tr>
+                <tr class="bg-primary/5 font-bold border-t-2 border-outline-variant">
+                    <td class="py-3 px-4 text-primary italic">Điểm xét tuyển cuối cùng${totalNote}</td>
+                    <td class="py-3 px-4">
+                        <span class="bg-primary text-on-primary px-3 py-1 rounded text-base shadow-sm">
+                            ${total.toFixed(2)}
+                        </span>
+                    </td>
+                </tr>
+                <tr class="border-t-2 border-outline-variant">
+                    <td class="py-3 px-4 text-on-surface font-medium">Điểm sàn ngành này</td>
+                    <td class="py-3 px-4 text-on-surface-variant">${diemSanHtml}</td>
+                </tr>
+                <tr class="bg-surface-container-low/30">
+                    <td class="py-3 px-4 text-on-surface font-medium">Điểm trúng tuyển năm trước</td>
+                    <td class="py-3 px-4 text-on-surface-variant">${diemTrungTuyenHtml}</td>
+                </tr>
+                ${statusHtml ? `
+                <tr>
+                    <td colspan="2" class="py-3 px-4">
+                        <div class="p-3 rounded-lg ${statusClass} flex items-center gap-2">
+                            ${statusHtml}
+                        </div>
+                    </td>
+                </tr>
+                ` : ''}
+            `;
+
+            // Hiển thị bảng
+            document.getElementById('detail-table-container').classList.remove('hidden');
+        }
+        /*]]>*/
+    </script>
+
+    <footer th:replace="~{fragments :: footer}"></footer>
+</body>
+
+</html>

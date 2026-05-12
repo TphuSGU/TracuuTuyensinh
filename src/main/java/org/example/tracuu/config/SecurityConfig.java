@@ -7,7 +7,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -23,7 +22,9 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        // Sử dụng NoOpPasswordEncoder - KHÔNG mã hóa password
+        // Password sẽ là plain text thuần túy (ví dụ: 01012000)
+        return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
     }
 
     @Bean
@@ -38,16 +39,24 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/css/**", "/js/**", "/images/**", "/fonts/**").permitAll()
-                .requestMatchers("/login").permitAll()
+                // Public resources - phải đặt trước tất cả
+                .requestMatchers("/api/**").permitAll()  // API endpoints - ưu tiên cao nhất
+                .requestMatchers("/debug/**").permitAll()  // Debug endpoints
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/fonts/**", "/favicon.ico").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
+                // Public pages
+                .requestMatchers("/login", "/tinh-diem-dgnl", "/tinh-diem-vsat", "/gioi-thieu", "/thong-tin-tuyen-sinh").permitAll()
+                // Admin pages
                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                // Tất cả các request khác cần authentication
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/tracuu", true)
+                .usernameParameter("username")
+                .passwordParameter("password")
+                .defaultSuccessUrl("/tracuu?loginSuccess=true", true)
                 .failureUrl("/login?error=true")
                 .permitAll()
             )
@@ -56,9 +65,7 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/login?logout=true")
                 .permitAll()
             )
-            .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/h2-console/**")
-            )
+            .csrf(csrf -> csrf.disable())
             .headers(headers -> headers
                 .frameOptions(frame -> frame.sameOrigin())
             );

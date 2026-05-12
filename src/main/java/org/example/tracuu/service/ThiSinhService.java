@@ -16,16 +16,8 @@ public class ThiSinhService {
         this.thiSinhRepository = thiSinhRepository;
     }
 
-    public Optional<ThiSinh> timTheoSoBaoDanh(String soBaoDanh) {
-        return thiSinhRepository.findBySoBaoDanh(soBaoDanh);
-    }
-
-    public List<ThiSinh> timTheoHoTen(String hoTen) {
-        return thiSinhRepository.findByHoTenContainingIgnoreCase(hoTen);
-    }
-
-    public List<ThiSinh> timTheoNganh(String nganh) {
-        return thiSinhRepository.findByNganhXetTuyenContainingIgnoreCase(nganh);
+    public Optional<ThiSinh> timTheoCccd(String cccd) {
+        return thiSinhRepository.findByCccd(cccd);
     }
 
     public List<ThiSinh> layTatCa() {
@@ -36,19 +28,15 @@ public class ThiSinhService {
         return thiSinhRepository.save(thiSinh);
     }
 
-    public void xoa(Long id) {
+    public void xoa(Integer id) {
         thiSinhRepository.deleteById(id);
     }
 
-    public Optional<ThiSinh> timTheoId(Long id) {
+    public Optional<ThiSinh> timTheoId(Integer id) {
         return thiSinhRepository.findById(id);
     }
 
     public long demTongSo() {
         return thiSinhRepository.count();
-    }
-
-    public long demTrungTuyen() {
-        return thiSinhRepository.findByKetQua("Trúng tuyển").size();
     }
 }
