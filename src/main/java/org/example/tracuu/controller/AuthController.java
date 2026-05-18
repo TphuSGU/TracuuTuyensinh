@@ -13,10 +13,10 @@ public class AuthController {
                             @RequestParam(value = "logout", required = false) String logout,
                             Model model) {
         if (error != null) {
-            model.addAttribute("error", "T\u00EAn \u0111\u0103ng nh\u1EADp ho\u1EB7c m\u1EADt kh\u1EA9u kh\u00F4ng \u0111\u00FAng!");
+            model.addAttribute("error", "Tài khoản or mật khẩu không đúng!");
         }
         if (logout != null) {
-            model.addAttribute("success", "\u0110\u0103ng xu\u1EA5t th\u00E0nh c\u00F4ng!");
+            model.addAttribute("success", "Đăng xuất thành công!");
         }
         return "login";
     }

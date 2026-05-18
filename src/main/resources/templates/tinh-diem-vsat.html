@@ -233,9 +233,9 @@
                 </div>
             </div>
             
-            <!-- Modal Footer -->
+            <!-- Modal Footer -->   
             <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3 shrink-0">
-                <button class="px-6 py-2 border border-[#001e2f] text-[#001e2f] rounded-lg font-bold hover:bg-gray-100 transition-all text-sm">Tải xuống kết quả (.PDF)</button>
+                <!-- <button class="px-6 py-2 border border-[#001e2f] text-[#001e2f] rounded-lg font-bold hover:bg-gray-100 transition-all text-sm">Tải xuống kết quả (.PDF)</button> -->
                 <button onclick="closeModal()" class="px-8 py-2 bg-[#001e2f] text-white rounded-lg font-bold hover:opacity-90 transition-all text-sm">Đóng</button>
             </div>
         </div>
@@ -244,7 +244,9 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
         // --- DỮ LIỆU TỪ THYMELEAF ---
-        const danhSachNganh = /*[[${danhSachNganh}]]*/ [];
+        const danhSachNganhVsat = /*[[${danhSachNganhVsat}]]*/ [];
+        const danhSachNganhThpt = /*[[${danhSachNganhThpt}]]*/ [];
+        const danhSachNganh = danhSachNganhVsat; // for compatibility
         const vsatConversionRules = /*[[${bangQuyDoiVSAT}]]*/ [];
         
         let currentCombinations = [];
@@ -252,12 +254,13 @@
 
         // Debug: Xem cấu trúc dữ liệu
         console.log('=== DEBUG VSAT Data ===');
-        console.log('Total majors:', danhSachNganh ? danhSachNganh.length : 0);
+        console.log('Total VSAT majors:', danhSachNganhVsat ? danhSachNganhVsat.length : 0);
+        console.log('Total THPT majors:', danhSachNganhThpt ? danhSachNganhThpt.length : 0);
         console.log('Total conversion rules:', vsatConversionRules ? vsatConversionRules.length : 0);
-        if (danhSachNganh && danhSachNganh.length > 0) {
-            console.log('First major:', danhSachNganh[0]);
+        if (danhSachNganhVsat && danhSachNganhVsat.length > 0) {
+            console.log('First VSAT major:', danhSachNganhVsat[0]);
         } else {
-            console.warn('No majors loaded from server!');
+            console.warn('No VSAT majors loaded from server!');
         }
         if (vsatConversionRules && vsatConversionRules.length > 0) {
             console.log('First rule:', vsatConversionRules[0]);
@@ -305,7 +308,7 @@
             
             console.log('Selected major:', majorCode, majorName, 'DiemSan:', diemSan, 'DiemTT:', diemTrungTuyen);
             
-            document.getElementById('res-major-title').innerText = `Ngành: ${majorName} (Dự kiến)`;
+            document.getElementById('res-major-title').innerText = `Ngành: ${majorName} `;
             
             const floorValue = Number.isFinite(diemSan) && diemSan > 0 ? diemSan.toFixed(2) : 'Chưa công bố';
             const passValue = Number.isFinite(diemTrungTuyen) && diemTrungTuyen > 0 ? diemTrungTuyen.toFixed(2) : 'Chưa công bố';
@@ -371,6 +374,55 @@
             // Do nothing - tính toán chỉ khi nhấn nút "Tính điểm"
         }
 
+        function loadMajorsForMethod(method) {
+            const selectEl = document.getElementById('major-select');
+            if (!selectEl) return;
+            
+            // Clear existing options except the first placeholder option
+            while (selectEl.options.length > 1) {
+                selectEl.remove(1);
+            }
+            
+            const list = method === 'vsat' ? danhSachNganhVsat : danhSachNganhThpt;
+            console.log(`Loading ${list.length} majors for method ${method}`);
+            
+            list.forEach(nganh => {
+                const opt = document.createElement('option');
+                opt.value = nganh.manganh;
+                opt.textContent = `${nganh.manganh} - ${nganh.tennganh}`;
+                
+                // Set custom attributes
+                opt.setAttribute('data-diemsan', nganh.diemSan !== null && nganh.diemSan !== undefined ? nganh.diemSan : '');
+                opt.setAttribute('data-diemtrungtuyen', nganh.diemTrungTuyen !== null && nganh.diemTrungTuyen !== undefined ? nganh.diemTrungTuyen : '');
+                opt.setAttribute('data-tohopgoc', nganh.tohopGoc || '');
+                
+                selectEl.appendChild(opt);
+            });
+            
+            // Reset selected index to placeholder
+            selectEl.selectedIndex = 0;
+            
+            // Reset results display
+            document.getElementById('res-major-title').innerText = `Ngành:`;
+            document.getElementById('res-major-floor').innerText = '';
+            document.getElementById('res-major-pass').innerText = '';
+            document.getElementById('res-major-tohopgoc').innerText = '';
+            
+            const comboContainer = document.getElementById('combination-results');
+            if (comboContainer) {
+                comboContainer.innerHTML = `
+                    <div class="col-span-2 flex flex-col items-center justify-center py-10 opacity-30 border-2 border-dashed border-white/20 rounded-xl" id="results-empty-state">
+                        <span class="material-symbols-outlined text-5xl mb-2">calculate</span>
+                        <p class="text-sm">Vui lòng nhập điểm và nhấn "Tính điểm ngay"</p>
+                    </div>
+                `;
+            }
+            const hintText = document.getElementById('hint-text');
+            if (hintText) {
+                hintText.style.display = 'none';
+            }
+        }
+
         // Cập nhật UI khi chuyển phương thức (chỉ gọi khi thay đổi radio button)
         function updateScoreInputs(method) {
             const inputs = [
@@ -409,6 +461,9 @@
             // Cập nhật title
             const methodText = method === 'vsat' ? 'V-SAT' : 'THPT';
             console.log(`Switched to ${methodText} mode`);
+            
+            // Tải lại ngành cho phương thức mới chọn
+            loadMajorsForMethod(method);
         }
 
         function clearFieldError(input) {
@@ -850,7 +905,7 @@
                                     </tr>
                                     
                                     <tr class="bg-red-50">
-                                        <td class="py-3 px-4 text-sm font-medium text-gray-700">Điểm xét tuyển (ĐXT) = ĐTHXT + ĐC + ĐUT - Độ lệch (c=30)</td>
+                                        <td class="py-3 px-4 text-sm font-medium text-gray-700">Điểm xét tuyển (ĐXT) = ĐTHXT + ĐC + ĐUT - Độ lệch </td>
                                         <td class="py-3 px-4 text-sm font-mono text-gray-800">
                                             <div class="bg-white p-2 rounded border border-red-300">
                                                 ${format3(dthxt)} + ${diemCongText} + ${totalPText} - ${dolechText} = <span class="font-bold text-base">${finalText}</span>

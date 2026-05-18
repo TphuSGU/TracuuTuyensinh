@@ -134,8 +134,8 @@
                                 <p class="text-2xl font-black text-green-700 mt-1" th:text="${#numbers.formatDecimal(diemChuanTrungTuyen, 1, 2)}">27.00</p>
                             </div>
                             <div class="col-span-2 pt-2 border-t border-gray-200 flex justify-between text-xs">
-                                <span class="text-gray-500">PT: <b class="text-gray-700" th:text="${nvTrungTuyen.phuongThuc}">VSAT</b></span>
-                                <span class="text-gray-500">Tổ hợp: <b class="text-gray-700" th:text="${nvTrungTuyen.toHop}">A00</b></span>
+                                <span class="text-gray-500">PT: <b class="text-gray-700" th:text="${nvTrungTuyen.phuongThuc}"></b></span>
+                                <span class="text-gray-500">Tổ hợp: <b class="text-gray-700" th:text="${nvTrungTuyen.toHop}"></b></span>
                             </div>
                         </div>
                     </div>
@@ -185,8 +185,9 @@
                             <th class="font-table-header text-table-header text-on-surface p-4">Tên ngành</th>
                             <th class="font-table-header text-table-header text-on-surface p-4">Phương thức</th>
                             <th class="font-table-header text-table-header text-on-surface p-4 text-center">Tổ hợp</th>
-                            <th class="font-table-header text-table-header text-on-surface p-4 text-center">Trạng thái
-                            </th>
+                            <th class="font-table-header text-table-header text-on-surface p-4 text-center">Điểm xét tuyển</th>
+                            <th class="font-table-header text-table-header text-on-surface p-4 text-center">Điểm chuẩn</th>
+                            <th class="font-table-header text-table-header text-on-surface p-4 text-center">Trạng thái</th>
                             <!-- <th class="font-table-header text-table-header text-on-surface p-4 text-center">Thao tác
                             </th> -->
                         </tr>
@@ -203,6 +204,10 @@
                             <td class="p-4 font-body-md text-on-surface-variant" th:text="${nv.phuongThuc}">Học bạ</td>
                             <td class="p-4 text-center font-body-md text-on-surface-variant"
                                 th:text="${nv.toHop != null ? nv.toHop : 'A00'}">A00</td>
+                            <td class="p-4 text-center font-body-md text-on-surface-variant font-semibold"
+                                th:text="${nv.diemXetTuyen != null ? #numbers.formatDecimal(nv.diemXetTuyen, 1, 2) : '—'}">—</td>
+                            <td class="p-4 text-center font-body-md text-on-surface-variant font-semibold"
+                                th:text="${diemChuanMap[nv.manganh] != null ? #numbers.formatDecimal(diemChuanMap[nv.manganh], 1, 2) : 'Chưa cập nhật'}">27.00</td>
                             <td class="p-4 text-center">
                                 <span th:if="${#strings.equalsIgnoreCase(nv.ketQua, 'Trúng tuyển')}"
                                     class="bg-success-container text-on-success-container text-[12px] px-3 py-1 rounded-full font-semibold">Trúng

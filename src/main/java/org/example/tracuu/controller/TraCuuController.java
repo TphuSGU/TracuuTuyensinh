@@ -5,21 +5,28 @@ import org.example.tracuu.model.NguyenVong;
 import org.example.tracuu.model.Nganh;
 import org.example.tracuu.model.BangQuyDoi;
 import org.example.tracuu.service.ThiSinhService;
+import org.example.tracuu.service.AdmissionService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 @Controller
 public class TraCuuController {
 
     private final ThiSinhService thiSinhService;
-    private final org.example.tracuu.service.AdmissionService admissionService;
+    private final AdmissionService admissionService;
 
-    public TraCuuController(ThiSinhService thiSinhService, 
-                            org.example.tracuu.service.AdmissionService admissionService) {
+    public TraCuuController(ThiSinhService thiSinhService,
+            AdmissionService admissionService) {
         this.thiSinhService = thiSinhService;
         this.admissionService = admissionService;
     }
@@ -50,50 +57,51 @@ public class TraCuuController {
     @GetMapping("/tinh-diem-dgnl")
     public String tinhDiemDgnl(Model model) {
         System.out.println("=== TINH DIEM DGNL CONTROLLER ===");
-        
+
         try {
             // Lấy tất cả ngành
-            java.util.List<Nganh> tatCaNganh = admissionService.layTatCaNganh();
+            List<Nganh> tatCaNganh = admissionService.layTatCaNganh();
             System.out.println("Total majors from DB: " + tatCaNganh.size());
-            
+
             // Lấy danh sách ngành hỗ trợ ĐGNL
-            // Chấp nhận cả "x", "X", "Có", "có", "CO", "co"
-            java.util.List<Nganh> danhSachNganh = tatCaNganh.stream()
+
+            List<Nganh> danhSachNganh = tatCaNganh.stream()
                     .filter(n -> {
                         String dgnl = n.getDgnl();
-                        if (dgnl == null) return false;
-                        dgnl = dgnl.trim().toLowerCase();
-                        return dgnl.equals("x") || dgnl.equals("có") || dgnl.equals("co");
+                        if (dgnl == null)
+                            return false;
+                    return "Y".equalsIgnoreCase(dgnl.trim());
                     })
-                    .collect(java.util.stream.Collectors.toList());
-            
-            System.out.println("DGNL majors filtered: " + danhSachNganh.size());
-            
-            if (!danhSachNganh.isEmpty()) {
-                System.out.println("First major: " + danhSachNganh.get(0).getManganh() + " - " + danhSachNganh.get(0).getTennganh());
-            } else {
-                System.out.println("WARNING: No DGNL majors found!");
-                // Nếu không có ngành DGNL, lấy tất cả ngành để test
-                danhSachNganh = tatCaNganh;
-                System.out.println("Using all majors for testing: " + danhSachNganh.size());
-            }
-            
+                    .collect(Collectors.toList());
+
+            // System.out.println("DGNL majors filtered: " + danhSachNganh.size());
+
+            // if (!danhSachNganh.isEmpty()) {
+            // System.out.println("First major: " + danhSachNganh.get(0).getManganh() + " -
+            // " + danhSachNganh.get(0).getTennganh());
+            // } else {
+            // System.out.println("WARNING: No DGNL majors found!");
+            // // Nếu không có ngành DGNL, lấy tất cả ngành để test
+            // danhSachNganh = tatCaNganh;
+            // System.out.println("Using all majors for testing: " + danhSachNganh.size());
+            // }
+
             model.addAttribute("danhSachNganh", danhSachNganh);
             model.addAttribute("totalMajors", tatCaNganh.size());
-            
+
             // Lấy bảng quy đổi ĐGNL
-            java.util.List<BangQuyDoi> bangQuyDoiDGNL = admissionService.layBangQuyDoiTheoPhuongThuc("DGNL");
+            List<BangQuyDoi> bangQuyDoiDGNL = admissionService.layBangQuyDoiTheoPhuongThuc("DGNL");
             System.out.println("DGNL conversion rules: " + bangQuyDoiDGNL.size());
             model.addAttribute("bangQuyDoiDGNL", bangQuyDoiDGNL);
-            
+
         } catch (Exception e) {
             System.err.println("ERROR in tinhDiemDgnl: " + e.getMessage());
             e.printStackTrace();
-            model.addAttribute("danhSachNganh", new java.util.ArrayList<>());
-            model.addAttribute("bangQuyDoiDGNL", new java.util.ArrayList<>());
+            model.addAttribute("danhSachNganh", new ArrayList<>());
+            model.addAttribute("bangQuyDoiDGNL", new ArrayList<>());
             model.addAttribute("errorMessage", "Lỗi khi tải dữ liệu: " + e.getMessage());
         }
-        
+
         return "tinh-diem-dgnl";
     }
 
@@ -101,46 +109,43 @@ public class TraCuuController {
     public String tinhDiemVsat(Model model) {
         try {
             // Lấy tất cả ngành
-            java.util.List<Nganh> tatCaNganh = admissionService.layTatCaNganh();
-            
+            List<Nganh> tatCaNganh = admissionService.layTatCaNganh();
+
             // Lấy danh sách ngành hỗ trợ VSAT
-            // Chấp nhận cả "x", "X", "Có", "có", "CO", "co"
-            java.util.List<Nganh> danhSachNganh = tatCaNganh.stream()
-                    .filter(n -> {
-                        String vsat = n.getVsat();
-                        if (vsat == null) return false;
-                        vsat = vsat.trim().toLowerCase();
-                        return vsat.equals("x") || vsat.equals("có") || vsat.equals("co");
-                    })
-                    .collect(java.util.stream.Collectors.toList());
-            
-            if (danhSachNganh.isEmpty()) {
-                // Nếu không có ngành VSAT, lấy tất cả ngành để test
-                danhSachNganh = tatCaNganh;
+            List<Nganh> danhSachNganhVsat = tatCaNganh.stream()
+                    .filter(n -> n.getVsat() != null && "Y".equalsIgnoreCase(n.getVsat().trim()))
+                    .collect(Collectors.toList());
+            if (danhSachNganhVsat.isEmpty()) {
+                danhSachNganhVsat = tatCaNganh;
             }
-            
-            model.addAttribute("danhSachNganh", danhSachNganh);
+
+            // Lấy danh sách ngành hỗ trợ THPT (lấy tất cả ngành như yêu cầu)
+            List<Nganh> danhSachNganhThpt = tatCaNganh;
+
+            model.addAttribute("danhSachNganh", danhSachNganhVsat);
+            model.addAttribute("danhSachNganhVsat", danhSachNganhVsat);
+            model.addAttribute("danhSachNganhThpt", danhSachNganhThpt);
             model.addAttribute("totalMajors", tatCaNganh.size());
-            
+
             // Lấy bảng quy đổi VSAT
-            java.util.List<BangQuyDoi> bangQuyDoiVSAT = admissionService.layBangQuyDoiTheoPhuongThuc("VSAT");
+            List<BangQuyDoi> bangQuyDoiVSAT = admissionService.layBangQuyDoiTheoPhuongThuc("VSAT");
             model.addAttribute("bangQuyDoiVSAT", bangQuyDoiVSAT);
-            
+
         } catch (Exception e) {
             System.err.println("ERROR in tinhDiemVsat: " + e.getMessage());
             e.printStackTrace();
-            model.addAttribute("danhSachNganh", new java.util.ArrayList<>());
-            model.addAttribute("bangQuyDoiVSAT", new java.util.ArrayList<>());
+            model.addAttribute("danhSachNganh", new ArrayList<>());
+            model.addAttribute("bangQuyDoiVSAT", new ArrayList<>());
             model.addAttribute("errorMessage", "Lỗi khi tải dữ liệu: " + e.getMessage());
         }
-        
+
         return "tinh-diem-vsat";
     }
 
     @GetMapping("/tracuu")
-    public String traCuu(Authentication authentication, 
-                         @org.springframework.web.bind.annotation.RequestParam(value = "loginSuccess", required = false) String loginSuccess,
-                         Model model) {
+    public String traCuu(Authentication authentication,
+            @RequestParam(value = "loginSuccess", required = false) String loginSuccess,
+            Model model) {
         if (authentication == null || "anonymousUser".equals(authentication.getName())) {
             return "redirect:/login";
         }
@@ -164,19 +169,25 @@ public class TraCuuController {
                 System.out.println(">>> TraCuu: Ho ten = " + thiSinh.getHo() + " " + thiSinh.getTen());
 
                 // Lấy danh sách nguyện vọng từ AdmissionService
-                java.util.List<NguyenVong> danhSachNguyenVong = admissionService.layNguyenVongTheoCccd(cccd);
+                List<NguyenVong> danhSachNguyenVong = admissionService.layNguyenVongTheoCccd(cccd);
                 System.out.println(">>> TraCuu: So nguyen vong = " + danhSachNguyenVong.size());
                 model.addAttribute("danhSachNguyenVong", danhSachNguyenVong);
-                // Fetch map of tenNganh for all NV
-                java.util.Map<String, String> tenNganhMap = new java.util.HashMap<>();
+                // Fetch map of tenNganh and diemChuan for all NV
+                Map<String, String> tenNganhMap = new HashMap<>();
+                Map<String, java.math.BigDecimal> diemChuanMap = new HashMap<>();
                 for (NguyenVong nv : danhSachNguyenVong) {
                     if (nv.getManganh() != null) {
-                        admissionService.timNganhTheoMa(nv.getManganh().trim()).ifPresent(n -> 
-                            tenNganhMap.put(nv.getManganh(), n.getTennganh())
-                        );
+                        admissionService.timNganhTheoMa(nv.getManganh().trim())
+                                .ifPresent(n -> {
+                                    tenNganhMap.put(nv.getManganh(), n.getTennganh());
+                                    if (n.getDiemTrungTuyen() != null) {
+                                        diemChuanMap.put(nv.getManganh(), n.getDiemTrungTuyen());
+                                    }
+                                });
                     }
                 }
                 model.addAttribute("tenNganhMap", tenNganhMap);
+                model.addAttribute("diemChuanMap", diemChuanMap);
 
                 // Tìm nguyện vọng trúng tuyển (nếu có)
                 NguyenVong nvTrungTuyen = danhSachNguyenVong.stream()

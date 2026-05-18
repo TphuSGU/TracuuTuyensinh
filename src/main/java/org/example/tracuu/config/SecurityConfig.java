@@ -7,13 +7,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
+    
     private final CustomUserDetailsService userDetailsService;
 
     public SecurityConfig(CustomUserDetailsService userDetailsService) {
@@ -24,8 +25,9 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         // Sử dụng NoOpPasswordEncoder - KHÔNG mã hóa password
         // Password sẽ là plain text thuần túy (ví dụ: 01012000)
-        return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
+        return NoOpPasswordEncoder.getInstance();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
