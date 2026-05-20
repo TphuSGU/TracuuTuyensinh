@@ -13,19 +13,21 @@ public class TohopMonthi {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idtohop", nullable = false)
     private Integer idtohop;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "matohop", nullable = false, length = 255)
     private String matohop;
 
-    @Column(nullable = false)
+    @Column(name = "mon1", nullable = false, length = 255)
     private String mon1;
 
-    @Column(nullable = false)
+    @Column(name = "mon2", nullable = false, length = 255)
     private String mon2;
 
-    @Column(nullable = false)
+    @Column(name = "mon3", nullable = false, length = 255)
     private String mon3;
 
+    @Column(name = "tentohop", length = 255)
     private String tentohop;
 }

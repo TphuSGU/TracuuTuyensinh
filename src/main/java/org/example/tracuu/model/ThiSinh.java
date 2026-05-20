@@ -55,9 +55,4 @@ public class ThiSinh {
     @Column(name = "khu_vuc", length = 45)
     private String khuVuc;
 
-    @Column(name = "diem_cong")
-    private Double diemCong;
-
-    @Column(name = "diem_uu_tien")
-    private Double diemUuTien;
 }

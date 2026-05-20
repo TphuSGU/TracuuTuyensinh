@@ -1,8 +1,6 @@
 package org.example.tracuu.service;
 
 import org.example.tracuu.model.ThiSinh;
-import org.example.tracuu.model.User;
-import org.example.tracuu.repository.UserRepository;
 import org.example.tracuu.repository.ThiSinhRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
@@ -13,12 +11,9 @@ import java.util.Collections;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
     private final ThiSinhRepository thiSinhRepository;
 
-    public CustomUserDetailsService(UserRepository userRepository,
-                                    ThiSinhRepository thiSinhRepository) {
-        this.userRepository = userRepository;
+    public CustomUserDetailsService(ThiSinhRepository thiSinhRepository) {
         this.thiSinhRepository = thiSinhRepository;
     }
 
@@ -28,18 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         // System.out.println(">>> Username length: " + (username != null ? username.length() : "null"));
         // System.out.println(">>> Username isEmpty: " + (username != null ? username.isEmpty() : "null"));
         
-        // 1. Kiểm tra trong bảng User (Admin / System Users)
-        // var userOpt = userRepository.findByUsername(username);
-        // if (userOpt.isPresent()) {
-        //     User user = userOpt.get();
-        //     System.out.println(">>> Tim thay Admin/User: " + username);
-        //     return new org.springframework.security.core.userdetails.User(
-        //             user.getUsername(),
-        //             user.getPassword(),
-        //             Collections.singletonList(new SimpleGrantedAuthority(user.getRole())));
-        // }
-
-        // 2. Kiểm tra trong bảng ThiSinh (xt_thisinhxettuyen25)
+        // Đăng nhập bằng CCCD của thí sinh (bảng xt_thisinhxettuyen25)
         var thiSinhOpt = thiSinhRepository.findByCccd(username);
         if (thiSinhOpt.isPresent()) {
             ThiSinh thiSinh = thiSinhOpt.get();
@@ -54,4 +38,3 @@ public class CustomUserDetailsService implements UserDetailsService {
         throw new UsernameNotFoundException("Khong tim thay tai khoan hoac thi sinh voi CCCD: " + username);
     }
 }
-

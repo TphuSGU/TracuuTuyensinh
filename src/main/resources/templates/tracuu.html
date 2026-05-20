@@ -10,7 +10,7 @@
     <!-- Main Content Canvas -->
     <main
         class="flex-grow w-full max-w-container-max mx-auto px-gutter py-stack-lg flex flex-col gap-stack-lg mt-stack-md">
-        
+
         <style>
             .status-badge {
                 display: inline-flex;
@@ -86,17 +86,19 @@
                 </div>
 
                 <!-- Case 2: Success (Highlight) - Simple & Compact -->
-                <div th:if="${coTrungTuyen}" 
+                <div th:if="${coTrungTuyen}"
                     class="bg-white border-2 border-green-200 rounded-xl p-5 shadow-sm flex flex-col gap-5">
-                    
+
                     <!-- Status Header -->
                     <div class="flex items-center justify-between border-b border-green-50 pb-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center">
+                            <div
+                                class="w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center">
                                 <span class="material-symbols-outlined">check</span>
                             </div>
                             <div>
-                                <h2 class="text-lg font-bold text-gray-900 leading-tight">Kết quả: Trúng tuyển chính thức</h2>
+                                <h2 class="text-lg font-bold text-gray-900 leading-tight">Kết quả: Trúng tuyển chính
+                                    thức</h2>
                                 <p class="text-sm text-green-600 font-medium">Chúc mừng bạn đã đạt kết quả tốt!</p>
                             </div>
                         </div>
@@ -109,17 +111,23 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-4">
                             <div>
-                                <label class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Ngành trúng tuyển</label>
-                                <p class="text-base font-bold text-primary mt-1" th:text="${tenNganhTrungTuyen}">Khoa học Máy tính</p>
+                                <label class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Ngành trúng
+                                    tuyển</label>
+                                <p class="text-base font-bold text-primary mt-1" th:text="${tenNganhTrungTuyen}">Khoa
+                                    học Máy tính</p>
                             </div>
                             <div class="flex gap-8">
                                 <div>
-                                    <label class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Mã ngành</label>
-                                    <p class="text-sm font-semibold text-gray-700 mt-0.5" th:text="${nvTrungTuyen.manganh}">7480201</p>
+                                    <label class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Mã
+                                        ngành</label>
+                                    <p class="text-sm font-semibold text-gray-700 mt-0.5"
+                                        th:text="${nvTrungTuyen.manganh}">7480201</p>
                                 </div>
                                 <div>
-                                    <label class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Thứ tự NV</label>
-                                    <p class="text-sm font-bold text-green-700 mt-0.5" th:text="${nvTrungTuyen.thuTu}">1</p>
+                                    <label class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Thứ tự
+                                        NV</label>
+                                    <p class="text-sm font-bold text-green-700 mt-0.5" th:text="${nvTrungTuyen.thuTu}">1
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -127,28 +135,33 @@
                         <div class="bg-gray-50 rounded-lg p-4 grid grid-cols-2 gap-4">
                             <div>
                                 <label class="text-[10px] text-gray-400 uppercase font-bold">Điểm của bạn</label>
-                                <p class="text-2xl font-black text-gray-900 mt-1" th:text="${#numbers.formatDecimal(nvTrungTuyen.diemXetTuyen, 1, 2)}">28.50</p>
+                                <p class="text-2xl font-black text-gray-900 mt-1"
+                                    th:text="${#numbers.formatDecimal(nvTrungTuyen.diemXetTuyen, 1, 2)}">28.50</p>
                             </div>
                             <div>
                                 <label class="text-[10px] text-gray-400 uppercase font-bold">Điểm chuẩn</label>
-                                <p class="text-2xl font-black text-green-700 mt-1" th:text="${#numbers.formatDecimal(diemChuanTrungTuyen, 1, 2)}">27.00</p>
+                                <p class="text-2xl font-black text-green-700 mt-1"
+                                    th:text="${#numbers.formatDecimal(diemChuanTrungTuyen, 1, 2)}">27.00</p>
                             </div>
                             <div class="col-span-2 pt-2 border-t border-gray-200 flex justify-between text-xs">
-                                <span class="text-gray-500">PT: <b class="text-gray-700" th:text="${nvTrungTuyen.phuongThuc}"></b></span>
-                                <span class="text-gray-500">Tổ hợp: <b class="text-gray-700" th:text="${nvTrungTuyen.toHop}"></b></span>
+                                <span class="text-gray-500">PT: <b class="text-gray-700"
+                                        th:text="${nvTrungTuyen.phuongThuc}"></b></span>
+                                <span class="text-gray-500">Tổ hợp: <b class="text-gray-700"
+                                        th:text="${nvTrungTuyen.toHop}"></b></span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Compact Actions -->
-                    <div class="flex flex-wrap justify-end gap-3 pt-2">
+                    <!-- <div class="flex flex-wrap justify-end gap-3 pt-2">
                         <button class="text-sm font-bold text-gray-500 px-4 py-2 hover:text-primary transition-colors">
                             Hướng dẫn nhập học
                         </button>
-                        <button class="bg-primary text-white text-sm font-bold px-5 py-2.5 rounded-lg hover:opacity-90 shadow-sm transition-all flex items-center gap-2">
+                        <button
+                            class="bg-primary text-white text-sm font-bold px-5 py-2.5 rounded-lg hover:opacity-90 shadow-sm transition-all flex items-center gap-2">
                             <span class="material-symbols-outlined text-sm">download</span> Tải giấy báo (PDF)
                         </button>
-                    </div>
+                    </div> -->
                 </div>
 
                 <!-- Case 3: Failed/Not Found -->
@@ -168,9 +181,271 @@
             </div> <!-- Close lg:col-span-8 -->
         </div> <!-- Close grid-cols-12 -->
 
+        <!-- ===== BẢNG ĐIỂM THÍ SINH ===== -->
+        <div th:if="${thiSinh != null}"
+            class="bg-surface-container-lowest border border-outline-variant rounded-lg shadow-sm overflow-hidden mt-stack-lg w-full">
+
+            <!-- Header -->
+            <div class="p-stack-md border-b border-outline-variant flex justify-between items-center bg-surface">
+                <h2 class="font-h2 text-h2 text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined">grade</span>
+                    Bảng điểm thí sinh
+                </h2>
+            </div>
+
+            <div class="p-4">
+                <div class="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3">
+                    <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                        <p class="text-sm font-semibold text-blue-800 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm">add_circle</span>
+                            Điểm cộng ưu tiên (Đối tượng + Khu vực)
+                        </p>
+                        <p class="text-lg font-black text-blue-800"
+                            th:text="|+${#numbers.formatDecimal(tongDiemUuTien, 1, 2)}|">+0.00</p>
+                    </div>
+                    <div class="mt-2 text-xs text-blue-700 flex flex-col gap-1 md:flex-row md:gap-4">
+                        <div class="flex items-center gap-1">
+                            <span>Đối tượng:</span>
+                            <span class="font-semibold"
+                                th:text="${thiSinh.doiTuong != null and !#strings.isEmpty(thiSinh.doiTuong) ? thiSinh.doiTuong : 'Không có'}">Không có</span>
+                            <span class="font-semibold"
+                                th:text="|(+${#numbers.formatDecimal(diemUuTienDoiTuong, 1, 2)})|">(+0.00)</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <span>Khu vực:</span>
+                            <span class="font-semibold"
+                                th:text="${thiSinh.khuVuc != null and !#strings.isEmpty(thiSinh.khuVuc) ? thiSinh.khuVuc : 'KV3'}">KV3</span>
+                            <span class="font-semibold"
+                                th:text="|(+${#numbers.formatDecimal(diemUuTienKhuVuc, 1, 2)})|">(+0.00)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 items-start">
+
+            <!-- ===== CỘT THPT ===== -->
+            <div id="panel-thpt" class="score-panel p-4 border border-outline-variant rounded-lg bg-surface">
+                <h3 class="font-h3 text-h3 text-primary mb-3 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">menu_book</span>THPT
+                </h3>
+                <div th:if="${diemThiXetTuyen != null}" class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-surface-container-low border-b border-outline-variant">
+                                <th class="p-3 text-xs text-on-surface-variant uppercase tracking-wider w-1/2">Môn học
+                                </th>
+                                <th class="p-3 text-xs text-on-surface text-center uppercase tracking-wider">Điểm (thang
+                                    10)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${diemThiXetTuyen.to != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">calculate</span>Toán
+                                    học</td>
+                                <td class="p-3 text-center font-bold text-on-surface"
+                                    th:text="${#numbers.formatDecimal(diemThiXetTuyen.to, 1, 2)}">—</td>
+                            </tr>
+                            <tr th:if="${diemThiXetTuyen.va != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">edit_note</span>Ngữ
+                                    văn</td>
+                                <td class="p-3 text-center font-bold text-on-surface"
+                                    th:text="${#numbers.formatDecimal(diemThiXetTuyen.va, 1, 2)}">—</td>
+                            </tr>
+                            <tr th:if="${diemThiXetTuyen.ti != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">language</span>Tiếng
+                                    Anh</td>
+                                <td class="p-3 text-center font-bold text-on-surface"
+                                    th:text="${#numbers.formatDecimal(diemThiXetTuyen.ti, 1, 2)}">—</td>
+                            </tr>
+                            <tr th:if="${diemThiXetTuyen.li != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">bolt</span>Vật
+                                    lý</td>
+                                <td class="p-3 text-center font-bold text-on-surface"
+                                    th:text="${#numbers.formatDecimal(diemThiXetTuyen.li, 1, 2)}">—</td>
+                            </tr>
+                            <tr th:if="${diemThiXetTuyen.ho != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">science</span>Hóa
+                                    học</td>
+                                <td class="p-3 text-center font-bold text-on-surface"
+                                    th:text="${#numbers.formatDecimal(diemThiXetTuyen.ho, 1, 2)}">—</td>
+                            </tr>
+                            <tr th:if="${diemThiXetTuyen.si != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">biotech</span>Sinh
+                                    học</td>
+                                <td class="p-3 text-center font-bold text-on-surface"
+                                    th:text="${#numbers.formatDecimal(diemThiXetTuyen.si, 1, 2)}">—</td>
+                            </tr>
+                            <tr th:if="${diemThiXetTuyen.su != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">history_edu</span>Lịch
+                                    sử</td>
+                                <td class="p-3 text-center font-bold text-on-surface"
+                                    th:text="${#numbers.formatDecimal(diemThiXetTuyen.su, 1, 2)}">—</td>
+                            </tr>
+                            <tr th:if="${diemThiXetTuyen.di != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">public</span>Địa
+                                    lý</td>
+                                <td class="p-3 text-center font-bold text-on-surface"
+                                    th:text="${#numbers.formatDecimal(diemThiXetTuyen.di, 1, 2)}">—</td>
+                            </tr>
+                            <tr th:if="${diemThiXetTuyen.gdcd != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">account_balance</span>GDCD
+                                </td>
+                                <td class="p-3 text-center font-bold text-on-surface"
+                                    th:text="${#numbers.formatDecimal(diemThiXetTuyen.gdcd, 1, 2)}">—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div th:unless="${diemThiXetTuyen != null}"
+                    class="py-8 text-center text-on-surface-variant flex flex-col items-center gap-2">
+                    <span class="material-symbols-outlined text-4xl opacity-30">quiz</span>
+                    <p class="text-sm italic">Chưa có dữ liệu điểm THPT</p>
+                </div>
+            </div>
+
+            <!-- ===== CỘT V-SAT ===== -->
+            <div id="panel-vsat" class="score-panel p-4 border border-outline-variant rounded-lg bg-surface">
+                <h3 class="font-h3 text-h3 text-primary mb-3 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">school</span>V-SAT
+                </h3>
+                <div th:if="${diemVsat != null}" class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-surface-container-low border-b border-outline-variant">
+                                <th class="p-3 text-xs text-on-surface-variant uppercase tracking-wider w-1/2">Môn học
+                                </th>
+                                <th class="p-3 text-xs text-on-surface text-center uppercase tracking-wider">Điểm thang
+                                    150</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${diemVsat.toanVsat != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">calculate</span>Toán
+                                    học</td>
+                                <td class="p-3 text-center font-bold text-primary" th:text="${diemVsat.toanVsat}">—</td>
+                            
+                            <tr th:if="${diemVsat.vanVsat != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">edit_note</span>Ngữ
+                                    văn</td>
+                                <td class="p-3 text-center font-bold text-primary" th:text="${diemVsat.vanVsat}">—</td>
+                            
+                            </tr>
+                            <tr th:if="${diemVsat.anhVsat != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">language</span>Tiếng
+                                    Anh</td>
+                                <td class="p-3 text-center font-bold text-primary" th:text="${diemVsat.anhVsat}">—</td>
+                             
+                            </tr>
+                            <tr th:if="${diemVsat.lyVsat != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">bolt</span>Vật
+                                    lý</td>
+                                <td class="p-3 text-center font-bold text-primary" th:text="${diemVsat.lyVsat}">—</td>
+                            
+                            </tr>
+                            <tr th:if="${diemVsat.hoaVsat != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">science</span>Hóa
+                                    học</td>
+                                <td class="p-3 text-center font-bold text-primary" th:text="${diemVsat.hoaVsat}">—</td>
+                            
+                            </tr>
+                            <tr th:if="${diemVsat.sinhVsat != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">biotech</span>Sinh
+                                    học</td>
+                                <td class="p-3 text-center font-bold text-primary" th:text="${diemVsat.sinhVsat}">—</td>
+                          
+                            </tr>
+                            <tr th:if="${diemVsat.suVsat != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">history_edu</span>Lịch
+                                    sử</td>
+                                <td class="p-3 text-center font-bold text-primary" th:text="${diemVsat.suVsat}">—</td>
+                              
+                            </tr>
+                            <tr th:if="${diemVsat.diaVsat != null}"
+                                class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                <td class="p-3 text-sm text-on-surface flex items-center gap-2"><span
+                                        class="material-symbols-outlined text-sm text-on-surface-variant">public</span>Địa
+                                    lý</td>
+                                <td class="p-3 text-center font-bold text-primary" th:text="${diemVsat.diaVsat}">—</td>
+                             
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p th:if="${diemVsat.dotThi != null}"
+                        class="mt-3 text-xs text-on-surface-variant italic text-center">
+                        Đợt thi: <span class="font-semibold" th:text="${diemVsat.dotThi}"></span>
+                    </p>
+                </div>
+                <div th:unless="${diemVsat != null}"
+                    class="py-8 text-center text-on-surface-variant flex flex-col items-center gap-2">
+                    <span class="material-symbols-outlined text-4xl opacity-30">quiz</span>
+                    <p class="text-sm italic">Thí sinh không xét tuyển V-SAT</p>
+                </div>
+            </div>
+
+            <!-- ===== CỘT ĐGNL ===== -->
+            <div id="panel-dgnl" class="score-panel p-4 border border-outline-variant rounded-lg bg-surface">
+                <h3 class="font-h3 text-h3 text-primary mb-3 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">workspace_premium</span>ĐGNL
+                </h3>
+                <div th:if="${diemThiXetTuyen != null and diemThiXetTuyen.nl1 != null}">
+                    <div class="max-w-sm">
+                        <div class="bg-purple-50 border border-purple-200 rounded-lg px-4 py-3 flex items-center justify-between gap-4">
+                            <p class="text-xs text-purple-600 font-bold uppercase tracking-wider">Điểm ĐGNL (NL1)</p>
+                            <p class="text-2xl font-black text-purple-700 whitespace-nowrap"
+                                th:text="${#numbers.formatDecimal(diemThiXetTuyen.nl1, 1, 2)}">—</p>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-xs text-on-surface-variant italic text-center">
+                        * Điểm NL1 là điểm đánh giá năng lực chính được sử dụng trong xét tuyển.
+                    </p>
+                </div>
+                <div th:unless="${diemThiXetTuyen != null and diemThiXetTuyen.nl1 != null}"
+                    class="py-8 text-center text-on-surface-variant flex flex-col items-center gap-2">
+                    <span class="material-symbols-outlined text-4xl opacity-30">quiz</span>
+                    <p class="text-sm italic">Thí sinh không xét tuyển ĐGNL</p>
+                </div>
+            </div>
+                </div>
+            </div>
+        </div>
+        <!-- ===== END BẢNG ĐIỂM ===== -->
+
         <!-- List of Wishes - Independent and Full Width -->
         <div th:if="${thiSinh != null}"
             class="bg-surface-container-lowest border border-outline-variant rounded-lg shadow-sm overflow-hidden mt-stack-lg w-full">
+
             <div class="p-stack-md border-b border-outline-variant flex justify-between items-center bg-surface">
                 <h2 class="font-h2 text-h2 text-primary">Danh sách nguyện vọng đã đăng ký</h2>
             </div>
@@ -181,23 +456,31 @@
                         <tr class="bg-surface-container-low border-b border-outline-variant">
                             <th class="font-table-header text-table-header text-on-surface p-4 text-center  ">Thứ tự NV
                             </th>
-                            <th class="font-table-header text-table-header text-on-surface p-4 text-center">Mã ngành</th>
+                            <th class="font-table-header text-table-header text-on-surface p-4 text-center">Mã ngành
+                            </th>
                             <th class="font-table-header text-table-header text-on-surface p-4">Tên ngành</th>
                             <th class="font-table-header text-table-header text-on-surface p-4">Phương thức</th>
                             <th class="font-table-header text-table-header text-on-surface p-4 text-center">Tổ hợp</th>
-                            <th class="font-table-header text-table-header text-on-surface p-4 text-center">Điểm xét tuyển</th>
-                            <th class="font-table-header text-table-header text-on-surface p-4 text-center">Điểm chuẩn</th>
-                            <th class="font-table-header text-table-header text-on-surface p-4 text-center">Trạng thái</th>
+                            <th class="font-table-header text-table-header text-on-surface p-4 text-center">Điểm xét
+                                tuyển</th>
+                            <th class="font-table-header text-table-header text-on-surface p-4 text-center">Điểm sàn
+                            </th>
+                            <th class="font-table-header text-table-header text-on-surface p-4 text-center">Điểm chuẩn
+                            </th>
+                            <th class="font-table-header text-table-header text-on-surface p-4 text-center">Trạng thái
+                            </th>
                             <!-- <th class="font-table-header text-table-header text-on-surface p-4 text-center">Thao tác
                             </th> -->
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="nv : ${danhSachNguyenVong}"
+                        <tr th:if="${danhSachNguyenVong != null and !#lists.isEmpty(danhSachNguyenVong)}"
+                            th:each="nv : ${danhSachNguyenVong}"
                             class="border-b border-outline-variant last:border-0 hover:bg-surface-container-lowest transition-colors">
                             <td class="p-4 text-center font-bold text-on-surface"
                                 th:text="${nv.thuTu != null ? nv.thuTu : '1'}">1</td>
-                            <td class="p-4 font-body-md text-on-surface-variant text-center" th:text="${nv.manganh}">IT1</td>
+                            <td class="p-4 font-body-md text-on-surface-variant text-center" th:text="${nv.manganh}">IT1
+                            </td>
                             <td class="p-4 font-body-md text-on-surface font-semibold"
                                 th:text="${tenNganhMap[nv.manganh] != null ? tenNganhMap[nv.manganh] : 'Đang cập nhật'}">
                                 Khoa học Máy tính</td>
@@ -205,17 +488,32 @@
                             <td class="p-4 text-center font-body-md text-on-surface-variant"
                                 th:text="${nv.toHop != null ? nv.toHop : 'A00'}">A00</td>
                             <td class="p-4 text-center font-body-md text-on-surface-variant font-semibold"
-                                th:text="${nv.diemXetTuyen != null ? #numbers.formatDecimal(nv.diemXetTuyen, 1, 2) : '—'}">—</td>
+                                th:text="${nv.diemXetTuyen != null ? #numbers.formatDecimal(nv.diemXetTuyen, 1, 2) : '—'}">
+                                —</td>
                             <td class="p-4 text-center font-body-md text-on-surface-variant font-semibold"
-                                th:text="${diemChuanMap[nv.manganh] != null ? #numbers.formatDecimal(diemChuanMap[nv.manganh], 1, 2) : 'Chưa cập nhật'}">27.00</td>
+                                th:text="${diemSanMap[nv.manganh] != null ? #numbers.formatDecimal(diemSanMap[nv.manganh], 1, 2) : 'Chưa cập nhật'}">
+                                —</td>
+                            <td class="p-4 text-center font-body-md text-on-surface-variant font-semibold"
+                                th:text="${diemChuanMap[nv.manganh] != null ? #numbers.formatDecimal(diemChuanMap[nv.manganh], 1, 2) : 'Chưa cập nhật'}">
+                                27.00</td>
                             <td class="p-4 text-center">
-                                <span th:if="${#strings.equalsIgnoreCase(nv.ketQua, 'Trúng tuyển')}"
-                                    class="bg-success-container text-on-success-container text-[12px] px-3 py-1 rounded-full font-semibold">Trúng
-                                    tuyển</span>
-                                <span th:unless="${#strings.equalsIgnoreCase(nv.ketQua, 'Trúng tuyển')}"
-                                    class="text-on-surface-variant italic text-[14px]"
-                                    th:text="${nv.ketQua != null ? nv.ketQua : 'Đang xét'}">Đang xét</span>
+                                <!-- Trúng Tuyển -->
+                                <span th:if="${#strings.equalsIgnoreCase(nv.ketQua, 'Trúng Tuyển')}"
+                                    class="bg-green-100 text-green-700 text-[12px] px-3 py-1 rounded-full font-semibold">
+                                    ✓ Trúng tuyển
+                                </span>
+                                <!-- Dưới Sàn -->
+                                <span th:if="${#strings.equalsIgnoreCase(nv.ketQua, 'Dưới Sàn')}"
+                                    class="bg-red-100 text-red-700 text-[12px] px-3 py-1 rounded-full font-semibold">
+                                    ✗ Dưới sàn
+                                </span>
+                                <!-- Rớt hoặc các trạng thái khác -->
+                                <span
+                                    th:if="${nv.ketQua == null or (!#strings.equalsIgnoreCase(nv.ketQua, 'Trúng Tuyển') and !#strings.equalsIgnoreCase(nv.ketQua, 'Dưới Sàn'))}"
+                                    class="bg-orange-100 text-orange-700 text-[12px] px-3 py-1 rounded-full font-semibold"
+                                    th:text="${nv.ketQua != null ? nv.ketQua : 'Đang xét'}">Rớt</span>
                             </td>
+
                             <!-- <td class="p-4 text-center">
                                 <button
                                     th:onclick="'showCalculationDetail(' + ${nv.diemThxt} + ', 0, 0, ' + ${nv.diemUtqd} + ',' + ${nv.diemXetTuyen} + ')'"
@@ -224,6 +522,11 @@
                                     Cách tính điểm
                                 </button>
                             </td> -->
+                        </tr>
+                        <tr th:if="${danhSachNguyenVong == null or #lists.isEmpty(danhSachNguyenVong)}">
+                            <td colspan="9" class="p-6 text-center text-on-surface-variant italic">
+                                Chưa có dữ liệu nguyện vọng cho thí sinh này.
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -254,33 +557,36 @@
         <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeModal()"></div>
         <div
             class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl max-h-[90vh] bg-surface-container-lowest rounded-xl shadow-2xl border border-outline-variant overflow-hidden flex flex-col">
-            
+
             <!-- HEADER - Sticky -->
-            <div class="bg-primary text-on-primary p-stack-md border-b border-outline-variant flex justify-between items-center flex-shrink-0">
+            <div
+                class="bg-primary text-on-primary p-stack-md border-b border-outline-variant flex justify-between items-center flex-shrink-0">
                 <div>
                     <h3 class="font-h3 text-h3 flex items-center gap-2">
                         <span class="material-symbols-outlined">description</span>
                         Giải thích kết quả xét tuyển
                     </h3>
                     <p class="font-label-sm text-on-primary/80 mt-1">
-                        Họ tên: <span id="modal-hoten" class="font-semibold">NGUYỄN VĂN A</span> | 
+                        Họ tên: <span id="modal-hoten" class="font-semibold">NGUYỄN VĂN A</span> |
                         CCCD: <span id="modal-cccd" class="font-semibold">012345678901</span>
                     </p>
                 </div>
-                <button onclick="closeModal()" class="text-on-primary hover:bg-on-primary/10 rounded-full p-2 transition-colors">
+                <button onclick="closeModal()"
+                    class="text-on-primary hover:bg-on-primary/10 rounded-full p-2 transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
 
             <!-- SCROLLABLE CONTENT -->
             <div class="overflow-y-auto flex-grow p-stack-md space-y-stack-md">
-                
+
                 <!-- BLOCK A - Thông tin ngành & Kết quả -->
                 <div class="bg-surface-container-low border border-outline-variant rounded-lg p-stack-md">
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <p class="font-label-sm text-on-surface-variant">Ngành</p>
-                            <p id="modal-tennganh" class="font-body-md text-on-surface font-semibold">Công nghệ Thông tin</p>
+                            <p id="modal-tennganh" class="font-body-md text-on-surface font-semibold">Công nghệ Thông
+                                tin</p>
                         </div>
                         <div>
                             <p class="font-label-sm text-on-surface-variant">Mã ngành</p>
@@ -299,7 +605,7 @@
                             <p id="modal-tohop" class="font-body-md text-on-surface">A00 (Toán, Lý, Anh)</p>
                         </div>
                     </div>
-                    
+
                     <div class="border-t border-outline-variant pt-4 mt-4 grid grid-cols-2 gap-4">
                         <div>
                             <p class="font-label-sm text-on-surface-variant">Điểm ngưỡng đầu vào</p>
@@ -313,7 +619,8 @@
 
                     <div id="modal-ketqua-badge" class="mt-4 p-4 rounded-lg text-center">
                         <span class="font-h3 text-h3 flex items-center justify-center gap-2">
-                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            <span class="material-symbols-outlined"
+                                style="font-variation-settings: 'FILL' 1;">check_circle</span>
                             TRÚNG TUYỂN
                         </span>
                     </div>
@@ -325,7 +632,7 @@
                         <span class="material-symbols-outlined">table_chart</span>
                         Toàn bộ dữ liệu điểm
                     </h4>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- B1. Điểm THPT -->
                         <div class="border border-outline-variant rounded-lg p-3">
@@ -334,17 +641,27 @@
                                     <span class="material-symbols-outlined text-green-600">menu_book</span>
                                     Điểm THPT
                                 </h5>
-                                <span id="badge-thpt" class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">Có điểm</span>
+                                <span id="badge-thpt"
+                                    class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">Có điểm</span>
                             </div>
                             <div class="space-y-1 text-sm">
-                                <div class="flex justify-between"><span class="text-on-surface-variant">Toán:</span><span id="thpt-toan" class="font-semibold">8.00</span></div>
-                                <div class="flex justify-between"><span class="text-on-surface-variant">Ngữ văn:</span><span id="thpt-van" class="font-semibold">7.50</span></div>
-                                <div class="flex justify-between"><span class="text-on-surface-variant">Tiếng Anh:</span><span id="thpt-anh" class="font-semibold">8.50</span></div>
-                                <div class="flex justify-between"><span class="text-on-surface-variant">Vật lý:</span><span id="thpt-ly" class="font-semibold">7.00</span></div>
-                                <div class="flex justify-between"><span class="text-on-surface-variant">Hóa học:</span><span id="thpt-hoa" class="text-gray-400">—</span></div>
-                                <div class="flex justify-between"><span class="text-on-surface-variant">Sinh học:</span><span id="thpt-sinh" class="text-gray-400">—</span></div>
-                                <div class="flex justify-between"><span class="text-on-surface-variant">Lịch sử:</span><span id="thpt-su" class="text-gray-400">—</span></div>
-                                <div class="flex justify-between"><span class="text-on-surface-variant">Địa lý:</span><span id="thpt-dia" class="text-gray-400">—</span></div>
+                                <div class="flex justify-between"><span
+                                        class="text-on-surface-variant">Toán:</span><span id="thpt-toan"
+                                        class="font-semibold">8.00</span></div>
+                                <div class="flex justify-between"><span class="text-on-surface-variant">Ngữ
+                                        văn:</span><span id="thpt-van" class="font-semibold">7.50</span></div>
+                                <div class="flex justify-between"><span class="text-on-surface-variant">Tiếng
+                                        Anh:</span><span id="thpt-anh" class="font-semibold">8.50</span></div>
+                                <div class="flex justify-between"><span class="text-on-surface-variant">Vật
+                                        lý:</span><span id="thpt-ly" class="font-semibold">7.00</span></div>
+                                <div class="flex justify-between"><span class="text-on-surface-variant">Hóa
+                                        học:</span><span id="thpt-hoa" class="text-gray-400">—</span></div>
+                                <div class="flex justify-between"><span class="text-on-surface-variant">Sinh
+                                        học:</span><span id="thpt-sinh" class="text-gray-400">—</span></div>
+                                <div class="flex justify-between"><span class="text-on-surface-variant">Lịch
+                                        sử:</span><span id="thpt-su" class="text-gray-400">—</span></div>
+                                <div class="flex justify-between"><span class="text-on-surface-variant">Địa
+                                        lý:</span><span id="thpt-dia" class="text-gray-400">—</span></div>
                             </div>
                         </div>
 
@@ -355,18 +672,31 @@
                                     <span class="material-symbols-outlined text-purple-600">school</span>
                                     Điểm VSAT
                                 </h5>
-                                <span id="badge-vsat" class="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700">Có điểm</span>
+                                <span id="badge-vsat"
+                                    class="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700">Có điểm</span>
                             </div>
                             <div class="space-y-1 text-sm">
-                                <div class="grid grid-cols-3 gap-1 font-semibold text-xs text-on-surface-variant border-b pb-1">
+                                <div
+                                    class="grid grid-cols-3 gap-1 font-semibold text-xs text-on-surface-variant border-b pb-1">
                                     <span>Môn</span>
                                     <span class="text-right">Thô (150)</span>
                                     <span class="text-right">QĐ (10)</span>
                                 </div>
-                                <div class="grid grid-cols-3 gap-1"><span class="text-on-surface-variant">Toán</span><span id="vsat-toan-tho" class="text-right font-semibold">120</span><span id="vsat-toan-qd" class="text-right font-semibold">7.52</span></div>
-                                <div class="grid grid-cols-3 gap-1"><span class="text-on-surface-variant">Ngữ văn</span><span id="vsat-van-tho" class="text-right font-semibold">90</span><span id="vsat-van-qd" class="text-right font-semibold">6.75</span></div>
-                                <div class="grid grid-cols-3 gap-1"><span class="text-on-surface-variant">T.Anh</span><span id="vsat-anh-tho" class="text-right font-semibold">90</span><span id="vsat-anh-qd" class="text-right font-semibold">6.75</span></div>
-                                <div class="grid grid-cols-3 gap-1"><span class="text-on-surface-variant">Vật lý</span><span id="vsat-ly-tho" class="text-right text-gray-400">—</span><span id="vsat-ly-qd" class="text-right text-gray-400">—</span></div>
+                                <div class="grid grid-cols-3 gap-1"><span
+                                        class="text-on-surface-variant">Toán</span><span id="vsat-toan-tho"
+                                        class="text-right font-semibold">120</span><span id="vsat-toan-qd"
+                                        class="text-right font-semibold">7.52</span></div>
+                                <div class="grid grid-cols-3 gap-1"><span class="text-on-surface-variant">Ngữ
+                                        văn</span><span id="vsat-van-tho"
+                                        class="text-right font-semibold">90</span><span id="vsat-van-qd"
+                                        class="text-right font-semibold">6.75</span></div>
+                                <div class="grid grid-cols-3 gap-1"><span
+                                        class="text-on-surface-variant">T.Anh</span><span id="vsat-anh-tho"
+                                        class="text-right font-semibold">90</span><span id="vsat-anh-qd"
+                                        class="text-right font-semibold">6.75</span></div>
+                                <div class="grid grid-cols-3 gap-1"><span class="text-on-surface-variant">Vật
+                                        lý</span><span id="vsat-ly-tho" class="text-right text-gray-400">—</span><span
+                                        id="vsat-ly-qd" class="text-right text-gray-400">—</span></div>
                             </div>
                         </div>
 
@@ -377,22 +707,13 @@
                                     <span class="material-symbols-outlined text-orange-600">workspace_premium</span>
                                     Điểm ĐGNL
                                 </h5>
-                                <span id="badge-dgnl" class="text-xs px-2 py-1 rounded-full bg-orange-100 text-orange-700">Có điểm</span>
+                                <span id="badge-dgnl"
+                                    class="text-xs px-2 py-1 rounded-full bg-orange-100 text-orange-700">Có điểm</span>
                             </div>
                             <div class="space-y-2 text-sm">
                                 <div class="flex justify-between">
-                                    <span class="text-on-surface-variant">Điểm thi (N1_THI):</span>
-                                    <span id="dgnl-thi" class="font-semibold">890.00</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-on-surface-variant">Chứng chỉ (N1_CC):</span>
-                                    <span id="dgnl-cc" class="text-gray-400">—</span>
-                                </div>
-                                <div class="border-t border-outline-variant pt-2 mt-2">
-                                    <div class="bg-orange-50 p-2 rounded">
-                                        <p class="text-xs text-on-surface-variant mb-1">Sử dụng điểm cao nhất:</p>
-                                        <p id="dgnl-caonhat" class="font-h3 text-h3 text-orange-700">890.00</p>
-                                    </div>
+                                    <span class="text-on-surface-variant">Điểm ĐGNL (NL1):</span>
+                                    <span id="dgnl-nl1" class="font-semibold">890.00</span>
                                 </div>
                             </div>
                         </div>
@@ -435,13 +756,15 @@
                         <span class="material-symbols-outlined">calculate</span>
                         Tính toán theo phương thức xét tuyển
                     </h4>
-                    
+
                     <div id="calculation-detail" class="space-y-3">
                         <!-- Sẽ được điền bởi JavaScript dựa trên phương thức -->
                         <div class="bg-surface-container-lowest rounded-lg p-4 border border-outline-variant">
-                            <p class="font-label-md text-on-surface-variant mb-2">Phương thức: <span id="calc-phuongthuc" class="font-semibold text-on-surface">VSAT</span></p>
-                            <p class="font-label-md text-on-surface-variant mb-3">Tổ hợp: <span id="calc-tohop" class="font-semibold text-on-surface">A00</span></p>
-                            
+                            <p class="font-label-md text-on-surface-variant mb-2">Phương thức: <span
+                                    id="calc-phuongthuc" class="font-semibold text-on-surface">VSAT</span></p>
+                            <p class="font-label-md text-on-surface-variant mb-3">Tổ hợp: <span id="calc-tohop"
+                                    class="font-semibold text-on-surface">A00</span></p>
+
                             <div class="space-y-2 text-sm">
                                 <div class="flex justify-between p-2 bg-surface-container-low rounded">
                                     <span class="text-on-surface-variant">Điểm môn 1 (Toán):</span>
@@ -478,7 +801,8 @@
 
                             <div class="mt-3 p-3 bg-success-container/50 rounded border border-success">
                                 <p class="text-sm text-on-success-container flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-success" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                    <span class="material-symbols-outlined text-success"
+                                        style="font-variation-settings: 'FILL' 1;">check_circle</span>
                                     <span>Đạt ngưỡng đầu vào & Trúng tuyển</span>
                                 </p>
                             </div>
@@ -492,7 +816,7 @@
                         <span class="material-symbols-outlined">summarize</span>
                         Kết luận
                     </h4>
-                    
+
                     <div class="space-y-3">
                         <div class="grid grid-cols-2 gap-3 text-sm">
                             <div>
@@ -528,9 +852,11 @@
                             </div>
                         </div>
 
-                        <div id="kl-ketqua" class="mt-4 p-4 bg-success-container text-on-success-container rounded-lg text-center">
+                        <div id="kl-ketqua"
+                            class="mt-4 p-4 bg-success-container text-on-success-container rounded-lg text-center">
                             <p class="font-h3 text-h3 flex items-center justify-center gap-2">
-                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                <span class="material-symbols-outlined"
+                                    style="font-variation-settings: 'FILL' 1;">check_circle</span>
                                 TRÚNG TUYỂN – Bạn đủ điều kiện vào ngành này
                             </p>
                         </div>
@@ -540,17 +866,20 @@
             </div>
 
             <!-- FOOTER - Sticky -->
-            <div class="bg-surface-container-low border-t border-outline-variant p-stack-md flex justify-between items-center flex-shrink-0">
+            <div
+                class="bg-surface-container-low border-t border-outline-variant p-stack-md flex justify-between items-center flex-shrink-0">
                 <p class="text-xs text-on-surface-variant italic flex items-center gap-1">
                     <span class="material-symbols-outlined text-sm">info</span>
                     Có thể được cập nhật tự động khi hệ thống xét tuyển thay đổi
                 </p>
                 <div class="flex gap-2">
-                    <button onclick="printResult()" class="border border-primary text-primary px-4 py-2 rounded hover:bg-primary-fixed transition-colors flex items-center gap-1">
+                    <button onclick="printResult()"
+                        class="border border-primary text-primary px-4 py-2 rounded hover:bg-primary-fixed transition-colors flex items-center gap-1">
                         <span class="material-symbols-outlined text-sm">print</span>
                         In kết quả
                     </button>
-                    <button onclick="closeModal()" class="bg-primary text-on-primary px-6 py-2 rounded hover:opacity-90 transition-opacity font-semibold">
+                    <button onclick="closeModal()"
+                        class="bg-primary text-on-primary px-6 py-2 rounded hover:opacity-90 transition-opacity font-semibold">
                         Đóng
                     </button>
                 </div>
@@ -594,9 +923,7 @@
             
             // Block B - Điểm ĐGNL
             dgnl: {
-                thi: 890.00,
-                cc: 0,
-                caoNhat: 890.00
+                nl1: 890.00
             },
             
             // Block B - Ưu tiên & cộng
@@ -673,9 +1000,7 @@
         document.getElementById('vsat-ly-qd').textContent = data.vsat.ly.qd > 0 ? data.vsat.ly.qd.toFixed(2) : '—';
         
         // Populate Block B - ĐGNL
-        document.getElementById('dgnl-thi').textContent = data.dgnl.thi > 0 ? data.dgnl.thi.toFixed(2) : '—';
-        document.getElementById('dgnl-cc').textContent = data.dgnl.cc > 0 ? data.dgnl.cc.toFixed(2) : '—';
-        document.getElementById('dgnl-caonhat').textContent = data.dgnl.caoNhat.toFixed(2);
+        document.getElementById('dgnl-nl1').textContent = data.dgnl.nl1 > 0 ? data.dgnl.nl1.toFixed(2) : '—';
         
         // Populate Block B - Ưu tiên
         document.getElementById('ut-khuvuc').textContent = data.uuTien.khuVuc;

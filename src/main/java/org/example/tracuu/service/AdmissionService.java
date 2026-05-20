@@ -15,17 +15,23 @@ public class AdmissionService {
     private final NguyenVongRepository nguyenVongRepository;
     private final BangQuyDoiRepository bangQuyDoiRepository;
     private final TohopMonthiRepository tohopMonthiRepository;
+    private final DiemThptRepository diemThptRepository;
+    private final DiemVsatRepository diemVsatRepository;
 
     public AdmissionService(NganhRepository nganhRepository,
                             NganhTohopRepository nganhTohopRepository,
                             NguyenVongRepository nguyenVongRepository,
                             BangQuyDoiRepository bangQuyDoiRepository,
-                            TohopMonthiRepository tohopMonthiRepository) {
+                            TohopMonthiRepository tohopMonthiRepository,
+                            DiemThptRepository diemThptRepository,
+                            DiemVsatRepository diemVsatRepository) {
         this.nganhRepository = nganhRepository;
         this.nganhTohopRepository = nganhTohopRepository;
         this.nguyenVongRepository = nguyenVongRepository;
         this.bangQuyDoiRepository = bangQuyDoiRepository;
         this.tohopMonthiRepository = tohopMonthiRepository;
+        this.diemThptRepository = diemThptRepository;
+        this.diemVsatRepository = diemVsatRepository;
     }
 
     // Nganh
@@ -63,5 +69,15 @@ public class AdmissionService {
     // TohopMonthi
     public Optional<TohopMonthi> timChiTietTohop(String matohop) {
         return tohopMonthiRepository.findByMatohop(matohop);
+    }
+
+    // Điểm thí sinh (bảng xt_diemthixettuyen)
+    public Optional<DiemThpt> layDiemThiXetTuyen(String cccd) {
+        return diemThptRepository.findByCccd(cccd);
+    }
+
+    // Điểm V-SAT (bảng xt_diemvsat)
+    public Optional<DiemVsat> layDiemVsat(String cccd) {
+        return diemVsatRepository.findByCccd(cccd);
     }
 }

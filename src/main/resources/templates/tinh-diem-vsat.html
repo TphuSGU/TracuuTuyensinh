@@ -135,9 +135,14 @@
                             <div>
                                 <label class="block font-label-sm text-label-sm text-on-surface mb-1">Đối tượng ưu tiên</label>
                                 <select class="w-full font-body-md text-body-md border border-outline-variant rounded-lg p-2.5 focus:border-primary focus:ring-1 focus:ring-primary bg-surface text-on-surface outline-none transition-all" id="priority-obj" onchange="updateCalculations()">
-                                    <option value="0">Không có (0 đ)</option>
-                                    <option value="2">Ưu tiên 1 (+2.0 đ)</option>
-                                    <option value="1">Ưu tiên 2 (+1.0 đ)</option>
+                                 <option value="0">Không có (0 đ)</option>
+                                <option value="2">Ưu tiên 1 (+2.0 đ)</option>
+                                <option value="2">Ưu tiên 2 (+2.0 đ)</option>
+                                <option value="2">Ưu tiên 3 (+2.0 đ)</option>
+                                <option value="2">Ưu tiên 4 (+2.0 đ)</option>
+                                <option value="2">Ưu tiên 5 (+2.0 đ)</option>
+                                <option value="1">Ưu tiên 6 (+1.0 đ)</option>
+                                <option value="1">Ưu tiên 7 (+1.0 đ)</option>
                                 </select>
                             </div>
                             <div>
@@ -150,7 +155,7 @@
                                 </select>
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block font-label-sm text-label-sm text-on-surface mb-1">Điểm cộng khuyến khích</label>
+                                <label class="block font-label-sm text-label-sm text-on-surface mb-1">Điểm khuyến khích(nếu có)</label>
                                 <div class="relative flex items-center">
                                     <input class="w-full font-body-md text-body-md border border-outline-variant rounded-lg p-2 focus:border-primary focus:ring-1 focus:ring-primary bg-surface text-on-surface outline-none transition-all" id="m-diemcong" placeholder="0.00" step="0.01" type="number" oninput="handleNumericInput(this)"/>
                                 </div>
@@ -857,6 +862,32 @@
                 const finalCappedNote = (finalRaw || 0) > 30
                     ? `<div class="mt-1 text-xs text-amber-700">Max điểm 30.</div>`
                     : '';
+                const majorSelectEl = document.getElementById('major-select');
+                const selectedMajorOption = majorSelectEl && majorSelectEl.selectedIndex >= 0
+                    ? majorSelectEl.options[majorSelectEl.selectedIndex]
+                    : null;
+                const diemChuan = selectedMajorOption
+                    ? parseFloat(selectedMajorOption.getAttribute('data-diemtrungtuyen'))
+                    : NaN;
+                const hasDiemChuan = Number.isFinite(diemChuan) && diemChuan > 0;
+                const chenhLechDiemChuan = hasDiemChuan ? final - diemChuan : 0;
+                const ketQuaDiemChuan = hasDiemChuan
+                    ? (chenhLechDiemChuan >= 0 ? 'ĐẬU' : 'RỚT')
+                    : 'CHƯA CÓ ĐIỂM CHUẨN';
+                const chenhLechText = `${chenhLechDiemChuan >= 0 ? '+' : ''}${format3(chenhLechDiemChuan)}`;
+                const soSanhDiemChuanHtml = hasDiemChuan
+                    ? `
+                        <div class="bg-white p-2 rounded border ${chenhLechDiemChuan >= 0 ? 'border-green-300' : 'border-red-300'}">
+                            Điểm chuẩn: <span class="font-bold">${format3(diemChuan)}</span><br>
+                            Kết quả: <span class="font-bold ${chenhLechDiemChuan >= 0 ? 'text-green-700' : 'text-red-700'}">${ketQuaDiemChuan}</span>
+                            <span class="text-xs text-gray-600">(chênh lệch ${chenhLechText})</span>
+                        </div>
+                    `
+                    : `
+                        <div class="bg-white p-2 rounded border border-gray-300 text-gray-600">
+                            Điểm chuẩn ngành này chưa công bố.
+                        </div>
+                    `;
 
                 contentHtml = `
                     <div class="space-y-4">
@@ -912,6 +943,12 @@
                                                 ${bonusCappedNote}
                                                 ${finalCappedNote}
                                             </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="${hasDiemChuan ? (chenhLechDiemChuan >= 0 ? 'bg-green-50' : 'bg-rose-50') : 'bg-gray-50'}">
+                                        <td class="py-3 px-4 text-sm font-medium text-gray-700">So với điểm chuẩn</td>
+                                        <td class="py-3 px-4 text-sm font-mono text-gray-800">
+                                            ${soSanhDiemChuanHtml}
                                         </td>
                                     </tr>
                                 </tbody>

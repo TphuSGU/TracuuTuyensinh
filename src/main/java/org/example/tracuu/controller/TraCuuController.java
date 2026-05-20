@@ -4,6 +4,8 @@ import org.example.tracuu.model.ThiSinh;
 import org.example.tracuu.model.NguyenVong;
 import org.example.tracuu.model.Nganh;
 import org.example.tracuu.model.BangQuyDoi;
+import org.example.tracuu.model.DiemThpt;
+import org.example.tracuu.model.DiemVsat;
 import org.example.tracuu.service.ThiSinhService;
 import org.example.tracuu.service.AdmissionService;
 import org.springframework.security.core.Authentication;
@@ -70,7 +72,7 @@ public class TraCuuController {
                         String dgnl = n.getDgnl();
                         if (dgnl == null)
                             return false;
-                    return "Y".equalsIgnoreCase(dgnl.trim());
+                        return "Y".equalsIgnoreCase(dgnl.trim());
                     })
                     .collect(Collectors.toList());
 
@@ -167,6 +169,11 @@ public class TraCuuController {
                 model.addAttribute("thiSinh", thiSinh);
                 model.addAttribute("hoTen", thiSinh.getHo() + " " + thiSinh.getTen());
                 System.out.println(">>> TraCuu: Ho ten = " + thiSinh.getHo() + " " + thiSinh.getTen());
+                double diemUuTienDoiTuong = tinhDiemUuTienDoiTuong(thiSinh.getDoiTuong());
+                double diemUuTienKhuVuc = tinhDiemUuTienKhuVuc(thiSinh.getKhuVuc());
+                model.addAttribute("diemUuTienDoiTuong", diemUuTienDoiTuong);
+                model.addAttribute("diemUuTienKhuVuc", diemUuTienKhuVuc);
+                model.addAttribute("tongDiemUuTien", diemUuTienDoiTuong + diemUuTienKhuVuc);
 
                 // Lấy danh sách nguyện vọng từ AdmissionService
                 List<NguyenVong> danhSachNguyenVong = admissionService.layNguyenVongTheoCccd(cccd);
@@ -175,6 +182,7 @@ public class TraCuuController {
                 // Fetch map of tenNganh and diemChuan for all NV
                 Map<String, String> tenNganhMap = new HashMap<>();
                 Map<String, java.math.BigDecimal> diemChuanMap = new HashMap<>();
+                Map<String, java.math.BigDecimal> diemSanMap = new HashMap<>();
                 for (NguyenVong nv : danhSachNguyenVong) {
                     if (nv.getManganh() != null) {
                         admissionService.timNganhTheoMa(nv.getManganh().trim())
@@ -183,15 +191,26 @@ public class TraCuuController {
                                     if (n.getDiemTrungTuyen() != null) {
                                         diemChuanMap.put(nv.getManganh(), n.getDiemTrungTuyen());
                                     }
+                                    if (n.getDiemSan() != null) {
+                                        diemSanMap.put(nv.getManganh(), n.getDiemSan());
+                                    }
                                 });
                     }
                 }
                 model.addAttribute("tenNganhMap", tenNganhMap);
                 model.addAttribute("diemChuanMap", diemChuanMap);
+                model.addAttribute("diemSanMap", diemSanMap);
 
-                // Tìm nguyện vọng trúng tuyển (nếu có)
+                // Tìm nguyện vọng trúng tuyển
+                // DB lưu: "Trúng Tuyển" | "Rớt" | "Dưới Sàn"
+                for (NguyenVong nv : danhSachNguyenVong) {
+                    System.out.println(">>> TraCuu: NV " + nv.getThuTu()
+                            + " [" + nv.getManganh() + "] ketQua='" + nv.getKetQua() + "'");
+                }
+
                 NguyenVong nvTrungTuyen = danhSachNguyenVong.stream()
-                        .filter(nv -> "Trúng tuyển".equalsIgnoreCase(nv.getKetQua()))
+                        .filter(nv -> nv.getKetQua() != null
+                                && nv.getKetQua().trim().equalsIgnoreCase("Trúng Tuyển"))
                         .findFirst()
                         .orElse(null);
 
@@ -199,21 +218,32 @@ public class TraCuuController {
                     System.out.println(">>> TraCuu: Trung tuyen nganh = " + nvTrungTuyen.getManganh());
                     model.addAttribute("coTrungTuyen", true);
                     model.addAttribute("nvTrungTuyen", nvTrungTuyen);
-                    // Lấy tên ngành trúng tuyển
                     admissionService.timNganhTheoMa(nvTrungTuyen.getManganh().trim()).ifPresent(nganh -> {
                         System.out.println(">>> TraCuu: Ten nganh = " + nganh.getTennganh());
                         model.addAttribute("tenNganhTrungTuyen", nganh.getTennganh());
                         model.addAttribute("diemChuanTrungTuyen", nganh.getDiemTrungTuyen());
                     });
                 } else {
-                    System.out.println(">>> TraCuu: Khong trung tuyen");
+                    // Kiểm tra xem có NV nào Dưới Sàn không
+                    boolean coDuoiSan = danhSachNguyenVong.stream()
+                            .anyMatch(nv -> nv.getKetQua() != null
+                                    && nv.getKetQua().trim().equalsIgnoreCase("Dưới Sàn"));
+
+                    System.out.println(">>> TraCuu: Khong trung tuyen. Co duoi san = " + coDuoiSan);
                     model.addAttribute("coTrungTuyen", false);
                     if (!danhSachNguyenVong.isEmpty()) {
-                        model.addAttribute("message",
-                                "Rất tiếc, bạn chưa trúng tuyển trong đợt xét tuyển này. " +
-                                        "Chúc bạn may mắn ở các đợt xét tuyển bổ sung hoặc nguyện vọng khác.");
+                        String msg = coDuoiSan
+                                ? "Rất tiếc, điểm của bạn không đạt ngưỡng đầu vào (dưới sàn) của các ngành đã đăng ký."
+                                : "Rất tiếc, bạn không trúng tuyển trong đợt xét tuyển này. Chúc bạn may mắn ở các đợt tiếp theo.";
+                        model.addAttribute("message", msg);
                     }
                 }
+
+                // Lấy bảng điểm thí sinh từ DB thực
+                DiemThpt diemThiXetTuyen = admissionService.layDiemThiXetTuyen(cccd).orElse(null);
+                model.addAttribute("diemThiXetTuyen", diemThiXetTuyen);
+                model.addAttribute("diemVsat", admissionService.layDiemVsat(cccd).orElse(null));
+
             } else {
                 System.out.println(">>> TraCuu: Khong tim thay thi sinh");
                 model.addAttribute("message",
@@ -226,5 +256,51 @@ public class TraCuuController {
         }
 
         return "tracuu";
+    }
+
+    private double tinhDiemUuTienDoiTuong(String doiTuong) {
+        if (doiTuong == null || doiTuong.trim().isEmpty()) {
+            return 0.0;
+        }
+
+        String value = doiTuong.toUpperCase().trim();
+        int code = 0;
+        for (char ch : value.toCharArray()) {
+            if (ch >= '1' && ch <= '7') {
+                code = ch - '0';
+                break;
+            }
+        }
+
+        if (code >= 1 && code <= 5) {
+            return 2.0;
+        }
+        if (code == 6 || code == 7) {
+            return 1.0;
+        }
+        return 0.0;
+    }
+
+    private double tinhDiemUuTienKhuVuc(String khuVuc) {
+        if (khuVuc == null || khuVuc.trim().isEmpty()) {
+            return 0.0;
+        }
+
+        String value = khuVuc.toUpperCase()
+                .replace(" ", "")
+                .replace("-", "")
+                .replace("_", "")
+                .replace(".", "");
+
+        if (value.contains("KV1") || value.contains("KHUVUC1") || "1".equals(value)) {
+            return 0.75;
+        }
+        if (value.contains("KV2NT") || value.contains("KHUVUC2NT") || "2NT".equals(value)) {
+            return 0.5;
+        }
+        if (value.contains("KV2") || value.contains("KHUVUC2") || "2".equals(value)) {
+            return 0.25;
+        }
+        return 0.0;
     }
 }
