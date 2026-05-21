@@ -27,16 +27,16 @@ public class NguyenVong {
     @Column(name = "nv_tt", nullable = false)
     private Integer thuTu;
 
-    @Column(name = "diem_thxt", precision = 38, scale = 2)
+    @Column(name = "diem_thxt", precision = 10, scale = 5)
     private BigDecimal diemThxt;
 
-    @Column(name = "diem_utqd", precision = 38, scale = 2)
+    @Column(name = "diem_utqd", precision = 10, scale = 5)
     private BigDecimal diemUtqd;
 
     @Column(name = "diem_cong", precision = 6, scale = 2)
     private BigDecimal diemCong;
 
-    @Column(name = "diem_xettuyen", precision = 38, scale = 2)
+    @Column(name = "diem_xettuyen", precision = 10, scale = 5)
     private BigDecimal diemXetTuyen;
 
     @Column(name = "nv_ketqua", length = 255)
