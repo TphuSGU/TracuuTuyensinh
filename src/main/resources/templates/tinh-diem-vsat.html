@@ -199,9 +199,13 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4" id="combination-results" tabindex="-1">
+                    <div id="best-combo-summary"
+                        class="hidden mx-auto max-w-full max-h-24 overflow-y-auto rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-center text-sm leading-relaxed text-white/90 whitespace-normal break-words">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[440px] overflow-y-auto pr-1" id="combination-results" tabindex="-1">
                         <!-- Empty State Placeholder -->
-                        <div class="col-span-2 flex flex-col items-center justify-center py-10 opacity-30 border-2 border-dashed border-white/20 rounded-xl" id="results-empty-state">
+                        <div class="col-span-1 sm:col-span-2 flex flex-col items-center justify-center py-10 opacity-30 border-2 border-dashed border-white/20 rounded-xl" id="results-empty-state">
                             <span class="material-symbols-outlined text-5xl mb-2">calculate</span>
                             <p class="text-sm">Vui lòng nhập điểm và nhấn "Tính điểm ngay"</p>
                         </div>
@@ -274,14 +278,14 @@
         }
 
         const subjectNames = {
-            'TO': 'Toán học', 'VA': 'Ngữ văn', 'AN': 'Tiếng Anh', 'LI': 'Vật lý',
+            'TO': 'Toán học', 'VA': 'Ngữ văn', 'AN': 'Tiếng Anh', 'N1': 'Tiếng Anh', 'TI': 'Tiếng Anh', 'LI': 'Vật lý',
             'HO': 'Hóa học', 'SI': 'Sinh học', 'SU': 'Lịch sử', 'DI': 'Địa lý', 'GD': 'GDCD'
         };
 
         const subjectCodeMap = {
             'TO': 'TO', 'TOAN': 'TO', 'TOÁN': 'TO', 'TOÁN HỌC': 'TO', 'TOAN HOC': 'TO',
             'VA': 'VA', 'VAN': 'VA', 'VĂN': 'VA', 'NGU VAN': 'VA', 'NGỮ VĂN': 'VA',
-            'AN': 'AN', 'ANH': 'AN', 'TIENG ANH': 'AN', 'TIẾNG ANH': 'AN',
+            'AN': 'N1', 'ANH': 'N1', 'N1': 'N1', 'TI': 'N1', 'TIENG ANH': 'N1', 'TIẾNG ANH': 'N1',
             'LI': 'LI', 'LY': 'LI', 'LÝ': 'LI', 'VAT LY': 'LI', 'VẬT LÝ': 'LI',
             'HO': 'HO', 'HOA': 'HO', 'HÓA': 'HO', 'HOA HOC': 'HO', 'HÓA HỌC': 'HO',
             'SI': 'SI', 'SINH': 'SI', 'SINH HOC': 'SI', 'SINH HỌC': 'SI',
@@ -412,6 +416,11 @@
             document.getElementById('res-major-floor').innerText = '';
             document.getElementById('res-major-pass').innerText = '';
             document.getElementById('res-major-tohopgoc').innerText = '';
+            const bestComboSummary = document.getElementById('best-combo-summary');
+            if (bestComboSummary) {
+                bestComboSummary.classList.add('hidden');
+                bestComboSummary.innerHTML = '';
+            }
             
             const comboContainer = document.getElementById('combination-results');
             if (comboContainer) {
@@ -700,7 +709,7 @@
             const subjectInputMap = {
                 'TO': 'm-toan', 'Toán': 'm-toan', 'Toan': 'm-toan',
                 'VA': 'm-van', 'Văn': 'm-van', 'Van': 'm-van',
-                'AN': 'm-anh', 'Anh': 'm-anh',
+                'AN': 'm-anh', 'N1': 'm-anh', 'TI': 'm-anh', 'Anh': 'm-anh',
                 'LI': 'm-ly', 'Lý': 'm-ly', 'Ly': 'm-ly',
                 'HO': 'm-hoa', 'Hóa': 'm-hoa', 'Hoa': 'm-hoa',
                 'SI': 'm-sinh', 'Sinh': 'm-sinh',
@@ -711,6 +720,14 @@
             const comboContainer = document.getElementById('combination-results');
             comboContainer.innerHTML = '';
             document.getElementById('results-empty-state')?.remove();
+            const bestComboSummary = document.getElementById('best-combo-summary');
+            if (bestComboSummary) {
+                bestComboSummary.classList.add('hidden');
+                bestComboSummary.innerHTML = '';
+            }
+            let bestCombos = [];
+            let bestScore = Number.NEGATIVE_INFINITY;
+            const EPSILON = 0.0005;
 
             currentCombinations.forEach(combo => {
                 console.log('Processing combo:', combo.matohop, 'Subjects:', combo.mon1, combo.mon2, combo.mon3);
@@ -753,7 +770,29 @@
                     <span class="text-[10px] text-blue-200/40 mt-1">${combo.mon1}, ${combo.mon2}, ${combo.mon3}</span>
                 `;
                 comboContainer.appendChild(card);
+
+                if (result.final > bestScore + EPSILON) {
+                    bestScore = result.final;
+                    bestCombos = [combo];
+                } else if (Math.abs(result.final - bestScore) <= EPSILON) {
+                    bestCombos.push(combo);
+                }
             });
+
+            if (bestComboSummary && bestCombos.length > 0 && Number.isFinite(bestScore)) {
+                const tohopGocLabel = currentTohopGoc || '—';
+                const danhSachToHopCaoNhat = bestCombos.map(c => c.matohop).join(', ');
+                const nhanToHop = bestCombos.length > 1
+                    ? 'Các tổ hợp có điểm xét tuyển cao nhất:'
+                    : 'Tổ hợp có điểm xét tuyển cao nhất:';
+                bestComboSummary.innerHTML = `
+                    ${nhanToHop}
+                    <span class="font-bold text-red-600">${danhSachToHopCaoNhat}</span> với 
+                    <span class="font-bold text-red-600">${bestScore.toFixed(2)} điểm</span>
+
+                `;
+                bestComboSummary.classList.remove('hidden');
+            }
 
             const priorityEl = document.getElementById('res-priority');
             if (priorityEl) {
